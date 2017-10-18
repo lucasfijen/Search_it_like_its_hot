@@ -13,20 +13,20 @@ def parse_posts(all_rows, categorie, result, parent_dict):
     for row in all_rows:
 
         if row.get('posttypeid') == '1': # check if row is a post
-                row_id = row.get('id')
-                doc_id = categorie + row_id # create a doc_id
-                result[doc_id] = {"answers":"", "comments":""}
-                
-                # get all information of the post
-                result[doc_id]["categorie"] = categorie
-                result[doc_id]["title"] = row.get('title')
-                result[doc_id]["tags"] = row.get('tag')
-                result[doc_id]["body"] = clean_text(row.get('body'))
-                result[doc_id]["viewcount"] = row.get('viewcount')
-                result[doc_id]["score"] = row.get('score')
-                result[doc_id]["creation_date"] = row.get('creationdate')
-                result[doc_id]["link"] = categorie + ".stackexchange.com/questions/" + row_id + "/" \
-                                        + result[doc_id]["title"].replace(" ", "-")
+            row_id = row.get('id')
+            doc_id = categorie + row_id # create a doc_id
+            result[doc_id] = {"answers":"", "comments":""}
+
+            # get all information of the post
+            result[doc_id]["categorie"] = categorie
+            result[doc_id]["title"] = row.get('title')
+            result[doc_id]["tags"] = row.get('tag')
+            result[doc_id]["body"] = clean_text(row.get('body'))
+            result[doc_id]["viewcount"] = row.get('viewcount')
+            result[doc_id]["score"] = row.get('score')
+            result[doc_id]["creation_date"] = row.get('creationdate')
+            result[doc_id]["link"] = categorie + ".stackexchange.com/questions/" + row_id + "/" \
+                                    + result[doc_id]["title"].replace(" ", "-")
 
         elif row.get('posttypeid') == '2':
 
