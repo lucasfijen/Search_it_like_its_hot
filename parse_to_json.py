@@ -15,7 +15,7 @@ def parse_posts(all_rows, categorie, result, parent_dict):
         if row.get('posttypeid') == '1': # check if row is a post
             row_id = row.get('id')
             doc_id = categorie + row_id # create a doc_id
-            result[doc_id] = {"answers":"", "comments":""}
+            result[doc_id] = {"answers":"", "comments":"", "answer_score":0}
 
             # get all information of the post
             result[doc_id]["categorie"] = categorie
@@ -45,7 +45,8 @@ def parse_comments(all_rows, categorie, result, parent_dict):
         except:
             doc_id = parent_dict[doc_id]
             result[doc_id]["comments"] += clean_text(row.get('text'))
-
+            result[doc_id]["answer_score"] += int(row.get('score'))
+            
 def dict_to_json(file , result_dict):
     with open(file, 'w') as outfile:  
         json.dump(result_dict, outfile, indent=4) # REMOVE INDENT LATER!!!!
