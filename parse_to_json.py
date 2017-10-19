@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup as bs
 import re
 import json
+import os
 
 
 def clean_text(s):
@@ -10,12 +11,21 @@ def clean_text(s):
     return s
 
 def parse_posts(all_rows, categorie, result, parent_dict):
+    accepted_answer_doc = {}
+
     for row in all_rows:
 
         if row.get('posttypeid') == '1': # check if row is a post
             row_id = row.get('id')
             doc_id = categorie + row_id # create a doc_id
-            result[doc_id] = {"answers":"", "comments":"", "answer_score":0}
+            try:
+                result_dict[doc_id]['answers']
+            except:
+                result[doc_id] = {"answers":"", "comments":"", "answer_score":0}
+
+            try: 
+                accepted_answer_doc[categorie + row.get("acceptedanswerid")] = doc_id
+            except: pass
 
             # get all information of the post
             result[doc_id]["categorie"] = categorie
@@ -29,27 +39,50 @@ def parse_posts(all_rows, categorie, result, parent_dict):
                                     + result[doc_id]["title"].replace(" ", "-")
 
         elif row.get('posttypeid') == '2':
+            doc_id = categorie + row.get('parentid')
+            row_id = categorie + row.get('id')
+            parent_dict[row_id] = doc_id
+            
+            if row_id in accepted_answer_doc:
+                try:
+                    result[doc_id]["accepted_answer"] = clean_text(row.get('body'))
+                    result[doc_id]["accepted_answer_score"] = int(row.get('score'))
 
-            # get the parent doc and add it to the parent dictionary
-            doc_id = categorie + row.get('parentid') 
-            parent_dict[categorie + row.get('id')] = doc_id
+                except:
+                    result[doc_id] = {"answers":"", "comments":"", "answer_score":0}
+                    result[doc_id]["accepted_answer"] = clean_text(row.get('body'))
+                    result[doc_id]["accepted_answer_score"] = int(row.get('score'))
 
-            # add the answer to the answers of the post
-            result[doc_id]["answers"] += clean_text(row.get('body'))  
+            else:
+                try:
+                    result[doc_id]["answers"] += clean_text(row.get('body'))  
+                    result[doc_id]["answer_score"] += int(row.get('score'))
+
+                except:
+                    result[doc_id] = {"answers":"", "comments":"", "answer_score":0}
+                    result[doc_id]["answers"] += clean_text(row.get('body'))  
+                    result[doc_id]["answer_score"] += int(row.get('score'))
 
 def parse_comments(all_rows, categorie, result, parent_dict):
     for row in all_rows:
         doc_id = categorie + row.get('postid')
+
         try:
             result[doc_id]["comments"] += clean_text(row.get('text'))
+
         except:
-            doc_id = parent_dict[doc_id]
-            result[doc_id]["comments"] += clean_text(row.get('text'))
-            result[doc_id]["answer_score"] += int(row.get('score'))
+            try:
+                doc_id = parent_dict[doc_id]
+                result[doc_id]["comments"] += clean_text(row.get('text'))
+                result[doc_id]["answer_score"] += int(row.get('score'))
+
+            except:
+                print(doc_id)
+                print(row.get('id'))
             
 def dict_to_json(file , result_dict):
     with open(file, 'w') as outfile:  
-        json.dump(result_dict, outfile, indent=4) # REMOVE INDENT LATER!!!!
+        json.dump(result_dict, outfile) # REMOVE INDENT LATER!!!!
 
 def get_soup_from_xml(file):
     xml_file = open(file, 'r')
@@ -58,25 +91,41 @@ def get_soup_from_xml(file):
     return soup
 
 
-def main(categorie):
+def parse_file_to_dict(file, categorie, result_dict):
+    os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r')
+
     print("in function")
-    result_dict = {}
     parent_dict = {}
     
     print("variables made")
     # get all info from the posts in the categorie     
-    soup = get_soup_from_xml(categorie + "/Posts.xml")
+    soup = get_soup_from_xml("Posts.xml")
+
+    print('soup made')
     parse_posts(soup.findAll("row"), categorie, result_dict, parent_dict)
 
     print("Posts done")
     # get all info from the comments in the categorie
-    soup = get_soup_from_xml(categorie + "/Comments.xml")
-    parse_comments(soup.findAll("row"), categorie, result_dict, parent_dict)
+    soup = get_soup_from_xml("Comments.xml")
 
-    print("Comments done")
-    # make a json from the dictionary
-    dict_to_json('data.txt', result_dict)
+    print('soup made')
+    parse_comments(soup.findAll("row"), categorie, result_dict, parent_dict)
 
     print("parsed")
 
-main("dataset")
+    os.system('rm Posts.xml Comments.xml')
+
+
+def main():
+    all_files = os.listdir('dataset')
+    result_dict = {}
+
+    for file in all_files:
+        print(file[:-21])
+        parse_file_to_dict(file, file[:-21], result_dict)
+
+    # make a json from the dictionary
+    dict_to_json('data.txt', result_dict)
+
+main()
+
