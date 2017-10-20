@@ -5,10 +5,19 @@ import os
 
 
 def clean_text(s):
+    if type(s) is not str:
+        return ""
     s = re.sub("<[^>]*>", " ", s) # remove html tags
     s = s.replace("\n", " ") # remove newlines
     s = re.sub("\W\W+", " ", s) # remove multiple spaces
     return s
+
+def clean_tags(s):
+    if type(s) is not str:
+        return ""
+    s = re.sub("<|>"," ", s)
+    s = re.sub("\s\s+"," ", s)
+    return s.strip()
 
 def parse_posts(all_rows, categorie, result_dict, parent_dict):
     accepted_answer_doc = {}
@@ -36,9 +45,9 @@ def parse_question(row, categorie, result_dict, parent_dict, accepted_answer_doc
     # get all information of the post
     result_dict[doc_id]["categorie"] = categorie
     result_dict[doc_id]["title"] = row.get('title')
-    result_dict[doc_id]["tags"] = row.get('tag')
+    result_dict[doc_id]["tags"] = clean_tags(row.get('tag'))
     result_dict[doc_id]["body"] = clean_text(row.get('body'))
-    result_dict[doc_id]["viewcount"] = row.get('viewcount')
+    result_dict[doc_id]["viewcount"] = int(row.get('viewcount'))
     result_dict[doc_id]["score"] = int(row.get('score'))
     result_dict[doc_id]["creation_date"] = row.get('creationdate')
     result_dict[doc_id]["link"] = categorie + ".stackexchange.com/questions/" + row_id + "/" \
