@@ -1,0 +1,22 @@
+footer{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(fire.gif);
+    background-repeat-x: repeat;
+    background-repeat-y: no-repeat;
+}
+
+div#header{
+    margin: auto;
+    height: 40%
+}
+
+#logo{
+
+    display: block;
+    margin: auto;
+    margin-top: 4%;
+    width: 70%;
+}

@@ -1,0 +1,57 @@
+<html>
+<head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("button").click(function(){
+                $("button").animate({left: '+=2000px'},"slow");
+        		$("#1").animate({left: '+=2000px'},"slow", function(){
+        			$("#1").css("display","block")
+        		}
+        		);
+
+        		$("#1").delay(600).animate({left: '+=-2000px'},"slow", function(){
+
+        		});
+        		$("button").delay(600).animate({left: '+=-2000px'},"slow");
+            });
+        });
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id='header'>
+        <img src='images/foto.jpg'; id='logo'>
+    </div>
+
+    <div id='searchitems'>
+
+    </div>
+
+    <div id='results'>
+
+    </div>
+
+</body>
+
+
+
+
+<!--<body>
+    <div id="box" style="margin-bottom:20px;margin-top:20px;width:100%">
+        <img src="images/foto.jpg" style="width:60%">
+    </div>
+    <input type="text" name="query" value="Wat wil je zoeken..." style="margin-bottom:20px">
+    <br />
+    <button style="position:relative;top:100px">Zoeken!</button>
+
+    <div style="position:relative;display:none" id="1">
+
+    	<textarea rows="4" cols="50" style="white-space: normal;text-align: justify;-moz-text-align-last: center;text-align-last: center;">
+    	Onze resultaten
+    	</textarea>
+
+    </div>
+</body>-->
+</html>
