@@ -1,57 +1,35 @@
-<html>
+<html5>
 <head>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
-        $(document).ready(function(){
-            $("button").click(function(){
-                $("button").animate({left: '+=2000px'},"slow");
-        		$("#1").animate({left: '+=2000px'},"slow", function(){
-        			$("#1").css("display","block")
-        		}
-        		);
+        $(document).ready(function() {
+            $("#askbutton").on("click", function() {
+                $('#askbutton').animate({left: '+=1800px'}, 600);
+                $('#results').animate({left: '+=1800px'}, 600, function(){
+                    $("#results").css('display', 'block');
+                });
 
-        		$("#1").delay(600).animate({left: '+=-2000px'},"slow", function(){
-
-        		});
-        		$("button").delay(600).animate({left: '+=-2000px'},"slow");
+                $('#askbutton').delay(600).animate({left: '-=1800px'}, 10000);
+                $('#results').delay(600).animate({left: '-=1800px'}, 10000);
             });
         });
     </script>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div id='header'>
         <img src='images/foto.jpg'; id='logo'>
     </div>
 
     <div id='searchitems'>
-
+        <input type='text' id='questionbar' value='Wat wilt u zoeken?'><br>
+        <button id='askbutton'>Zoeken!</button><br>
     </div>
 
     <div id='results'>
-
+        <h1>Resultatendiv</h1>
     </div>
 
 </body>
-
-
-
-
-<!--<body>
-    <div id="box" style="margin-bottom:20px;margin-top:20px;width:100%">
-        <img src="images/foto.jpg" style="width:60%">
-    </div>
-    <input type="text" name="query" value="Wat wil je zoeken..." style="margin-bottom:20px">
-    <br />
-    <button style="position:relative;top:100px">Zoeken!</button>
-
-    <div style="position:relative;display:none" id="1">
-
-    	<textarea rows="4" cols="50" style="white-space: normal;text-align: justify;-moz-text-align-last: center;text-align-last: center;">
-    	Onze resultaten
-    	</textarea>
-
-    </div>
-</body>-->
 </html>
