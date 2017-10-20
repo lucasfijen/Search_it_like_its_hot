@@ -97,9 +97,7 @@ def parse_comments(all_rows, categorie, result_dict, parent_dict):
                 result_dict[doc_id]["comments"] += clean_text(row.get('text'))
                 result_dict[doc_id]["answer_score"] += int(row.get('score'))
 
-            except:
-                print(doc_id)
-                print(row.get('id'))
+            except: pass
 
 ########### file management ##########
             
