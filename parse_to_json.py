@@ -3,6 +3,7 @@ import re
 import json
 import os
 
+########## cleanup ##########
 
 def clean_text(s):
     if type(s) is not str:
@@ -18,6 +19,8 @@ def clean_tags(s):
     s = re.sub("<|>"," ", s)
     s = re.sub("\s\s+"," ", s)
     return s.strip()
+
+########## parse posts ##########
 
 def parse_posts(all_rows, categorie, result_dict, parent_dict):
     accepted_answer_doc = {}
@@ -79,6 +82,8 @@ def parse_answer(row, categorie, result_dict, parent_dict, accepted_answer_doc):
             result_dict[doc_id]["answers"] += clean_text(row.get('body'))  
             result_dict[doc_id]["answer_score"] += int(row.get('score'))
 
+########## parse comments ##########
+
 def parse_comments(all_rows, categorie, result_dict, parent_dict):
     for row in all_rows:
         doc_id = categorie + row.get('postid')
@@ -95,6 +100,8 @@ def parse_comments(all_rows, categorie, result_dict, parent_dict):
             except:
                 print(doc_id)
                 print(row.get('id'))
+
+########### file management ##########
             
 def dict_to_json(file , result_dict):
     with open(file, 'w') as outfile:  
@@ -106,6 +113,7 @@ def get_soup_from_xml(file):
     xml_file.close()
     return soup
 
+########### PARSER ##########
 
 def parse_file_to_dict(file, categorie, result_dict):
     os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r')
@@ -131,6 +139,7 @@ def parse_file_to_dict(file, categorie, result_dict):
 
     os.system('rm Posts.xml Comments.xml')
 
+########## MAIN ##########
 
 def main():
     all_files = os.listdir('dataset')
