@@ -1,4 +1,4 @@
-footer{
+footer {
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -8,15 +8,34 @@ footer{
     background-repeat-y: no-repeat;
 }
 
-div#header{
+div#heade r{
     margin: auto;
-    height: 40%
+}
+
+div#searchitems {
+    margin-top: 20px;
 }
 
 #logo{
-
     display: block;
     margin: auto;
     margin-top: 4%;
     width: 70%;
+}
+
+
+#questionbar {
+    display: block;
+    margin: auto;
+    width: 400px;
+}
+#askbutton {
+    position:relative;
+    left:200px;
+}
+
+#results {
+    position: relative;
+    display:none;
+    left:200px;
 }
