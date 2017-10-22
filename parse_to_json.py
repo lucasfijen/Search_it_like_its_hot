@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup as bs
 import re
 import json
 import os
+import sys
 
 ########## cleanup ##########
 
@@ -20,135 +21,203 @@ def clean_tags(s):
     s = re.sub("\s\s+"," ", s)
     return s.strip()
 
-########## parse posts ##########
+########## linking rows ##########
 
-def parse_posts(all_rows, categorie, result_dict, parent_dict):
-    accepted_answer_doc = {}
+def make_accepted_answer_dict(question_dict):
+    question_answer = {}
+    answer_question = {}
 
-    for row in all_rows:
+    for question in question_dict.keys():
+        soup = bs(question_dict[question], 'lxml')
+        try:
+            soup = soup.findAll('row')[0] 
+        except:
+            print('ERROR', soup)
+            continue
 
-        if row.get('posttypeid') == '1': # check if row is a post
-            parse_question(row, categorie, result_dict, parent_dict, accepted_answer_doc)
+        try:
+            question_answer[str(question)] = soup['acceptedanswerid']
+            answer_question[soup['acceptedanswerid']] = str(question) 
 
-        elif row.get('posttypeid') == '2':
-            parse_answer(row, categorie, result_dict, parent_dict, accepted_answer_doc)            
+        except:pass
 
-def parse_question(row, categorie, result_dict, parent_dict, accepted_answer_doc):
-    row_id = row.get('id')
-    doc_id = categorie + row_id # create a doc_id
-    try:
-        result_dict[doc_id]['answers']
-    except:
-        result_dict[doc_id] = {"answers":"", "comments":"", "answer_score":0}
-
-    try: 
-        accepted_answer_doc[categorie + row.get("acceptedanswerid")] = doc_id
-    except: pass
-
-    # get all information of the post
-    result_dict[doc_id]["categorie"] = categorie
-    result_dict[doc_id]["title"] = row.get('title')
-    result_dict[doc_id]["tags"] = clean_tags(row.get('tag'))
-    result_dict[doc_id]["body"] = clean_text(row.get('body'))
-    result_dict[doc_id]["viewcount"] = int(row.get('viewcount'))
-    result_dict[doc_id]["score"] = int(row.get('score'))
-    result_dict[doc_id]["creation_date"] = row.get('creationdate')
-    result_dict[doc_id]["link"] = categorie + ".stackexchange.com/questions/" + row_id + "/" \
-                                    + result_dict[doc_id]["title"].replace(" ", "-")
+    return question_answer, answer_question
 
 
-def parse_answer(row, categorie, result_dict, parent_dict, accepted_answer_doc):
-    doc_id = categorie + row.get('parentid')
-    row_id = categorie + row.get('id')
-    parent_dict[row_id] = doc_id
+def make_answer_dict(answer_dict, accepted_answer_dict):
+    question_answer = {}
+    answer_question = {}
+
+    for line in answer_dict.keys():
+        soup = bs(answer_dict[line], 'lxml')
+        soup = soup.findAll('row')[0]
+        if soup['id'] in accepted_answer_dict.keys():
+            continue
+
+        try:
+            x = question_answer[soup['parentid']]
+            x.append(soup['id'])
+            question_answer[soup['parentid']] = x
+        except:
+            question_answer[soup['parentid']] = [soup['id']]
+
+        answer_question[soup['id']] = soup['parentid']
     
-    if row_id in accepted_answer_doc:
+    return question_answer, answer_question
+
+def make_question_comment_dict(question_dict, comment_dict, answer_dict, accepted_answer_dict):
+    result = {}
+
+    for line in comment_dict.keys():
         try:
-            result_dict[doc_id]["accepted_answer"] = clean_text(row.get('body'))
-            result_dict[doc_id]["accepted_answer_score"] = int(row.get('score'))
+            soup = bs(comment_dict[line], 'lxml')
+            soup = soup.findAll('row')[0]
+        except: continue
 
-        except:
-            result_dict[doc_id] = {"answers":"", "comments":"", "answer_score":0}
-            result_dict[doc_id]["accepted_answer"] = clean_text(row.get('body'))
-            result_dict[doc_id]["accepted_answer_score"] = int(row.get('score'))
+        parent = soup['postid']
 
-    else:
-        try:
-            result_dict[doc_id]["answers"] += clean_text(row.get('body'))  
-            result_dict[doc_id]["answer_score"] += int(row.get('score'))
+        if parent in answer_dict:
+            parent = answer_dict[parent]
 
-        except:
-            result_dict[doc_id] = {"answers":"", "comments":"", "answer_score":0}
-            result_dict[doc_id]["answers"] += clean_text(row.get('body'))  
-            result_dict[doc_id]["answer_score"] += int(row.get('score'))
+        elif parent in accepted_answer_dict:
+            parent = accepted_answer_dict[parent]
 
-########## parse comments ##########
-
-def parse_comments(all_rows, categorie, result_dict, parent_dict):
-    for row in all_rows:
-        doc_id = categorie + row.get('postid')
-
-        try:
-            result_dict[doc_id]["comments"] += clean_text(row.get('text'))
-
-        except:
+        if parent in question_dict:
             try:
-                doc_id = parent_dict[doc_id]
-                result_dict[doc_id]["comments"] += clean_text(row.get('text'))
-                result_dict[doc_id]["answer_score"] += int(row.get('score'))
+                x = result[parent]
+                x.append(soup['id'])
+                result[parent] = x
+            except:  
+                result[parent] = [soup['id']]
+    
+    return result
 
-            except: pass
+########## file management ##########
 
-########### file management ##########
-            
-def dict_to_json(file , result_dict):
-    with open(file, 'w') as outfile:  
+def dict_to_json(result_dict):
+    file = result_dict['id']
+    with open('json_files/' + file + '.json', 'w') as outfile:  
         json.dump(result_dict, outfile, indent=4) # REMOVE INDENT LATER!!!!
 
-def get_soup_from_xml(file):
-    xml_file = open(file, 'r')
-    soup = bs(xml_file, 'lxml')
-    xml_file.close()
-    return soup
+def make_dicts_from_file(file):
+    question_dict = {}
+    answer_dict = {}
+    comment_dict = {}
 
-########### PARSER ##########
-
-def parse_file_to_dict(file, categorie, result_dict):
     os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r')
 
-    print("in function")
-    parent_dict = {}
+    text_file = open('Posts.xml', 'r')
     
-    print("variables made")
-    # get all info from the posts in the categorie     
-    soup = get_soup_from_xml("Posts.xml")
+    for line in text_file:
+        soup = bs(line, 'lxml')
+        try:
+            soup = soup.findAll('row')[0]
+        except: continue
 
-    print('soup made')
-    parse_posts(soup.findAll("row"), categorie, result_dict, parent_dict)
+        if soup['posttypeid'] == '1':
+            question_dict[soup.get('id')] = line
+        elif soup['posttypeid'] == '2':
+            answer_dict[soup.get('id')] = line
 
-    print("Posts done")
-    # get all info from the comments in the categorie
-    soup = get_soup_from_xml("Comments.xml")
+    text_file.close()
 
-    print('soup made')
-    parse_comments(soup.findAll("row"), categorie, result_dict, parent_dict)
+    text_file = open('Comments.xml', 'r')
+    
+    for i,line in enumerate(text_file):
+        if i >= 2:
+            soup = bs(line, 'lxml')
+            try:
+                soup = soup.findAll('row')[0]
+            except: continue
+            comment_dict[soup.get('id')] = line
 
-    print("parsed")
+    text_file.close()
 
     os.system('rm Posts.xml Comments.xml')
+
+    return question_dict, answer_dict, comment_dict
+
+########## parser ##########
+
+def make_dicts(file):
+
+    question_dict, answer_dict, comment_dict = make_dicts_from_file(file)
+
+    question_accepted_answer_dict, accepted_answer_question_dict = make_accepted_answer_dict(question_dict)
+
+    question_answer_dict, answer_question_dict = make_answer_dict(answer_dict, accepted_answer_question_dict)
+
+    question_comment_dict = make_question_comment_dict(question_dict, comment_dict, answer_question_dict, accepted_answer_question_dict)
+
+    return question_dict, answer_dict, comment_dict, question_accepted_answer_dict, accepted_answer_question_dict, question_answer_dict, answer_question_dict, question_comment_dict
+
+########## Parser ###########
+
+def parse_file(categorie, question_dict, answer_dict, comment_dict, question_accepted_answer_dict, accepted_answer_question_dict,
+            question_answer_dict, answer_question_dict, question_comment_dict):
+    for question in question_dict.keys():
+        soup = bs(question_dict[question], 'lxml')
+        soup = soup.findAll('row')[0]
+        row_id = soup.get('id')
+
+        result = {"answers":"", "comments":"", "answer_score":0, "comment_score":0}
+        result['id'] = categorie + row_id
+        result["categorie"] = categorie
+        result["title"] = soup.get('title')
+        result["tags"] = clean_tags(soup.get('tag'))
+        result["body"] = clean_text(soup.get('body'))
+        result["viewcount"] = int(soup.get('viewcount'))
+        result["score"] = int(soup.get('score'))
+        result["creation_date"] = soup.get('creationdate')
+        result["link"] = categorie + ".stackexchange.com/questions/" + row_id + "/" \
+                                        + result["title"].replace(" ", "-")
+        
+        if row_id in question_accepted_answer_dict:
+            accepted_answer = question_accepted_answer_dict[row_id]
+            soup = bs(answer_dict[accepted_answer], 'lxml')
+            soup = soup.findAll('row')[0]
+            result['accepted_answer'] = clean_text(soup.get('body'))
+            result['accepted_answer_score'] = soup.get('score')
+
+        else:
+            print('no accepted answer')
+
+        if row_id in question_answer_dict:
+            answers = question_answer_dict[row_id]
+            for a in answers:
+                soup = bs(answer_dict[a], 'lxml')
+                soup = soup.findAll('row')[0]
+                result['answers'] += clean_text(soup.get('body')) + " "
+                result['answer_score'] += int(soup.get('score'))
+
+        if row_id in question_comment_dict:
+            questions = question_comment_dict[row_id]
+            for question in questions:
+                soup = bs(comment_dict[question], 'lxml')
+                soup = soup.findAll('row')[0]
+                result['comments'] += clean_text(soup.get('text')) + " "
+                result['comment_score'] += int(soup.get('score'))
+
+        # print(soup)
+        # print(result)
+
+        dict_to_json(result)
+
+    question_dict = answer_dict = comment_dict = question_answer_dict = question_comment_dict = question_accepted_answer_dict = answer_dict = accepted_answer_dict = {}
+    print(question_dict)
 
 ########## MAIN ##########
 
 def main():
-    all_files = os.listdir('dataset')
-    result_dict = {}
 
-    for file in all_files:
-        print(file[:-21])
-        parse_file_to_dict(file, file[:-21], result_dict)
+    for file in os.listdir('dataset'):
+        categorie = file[:-21]
+        question_dict, answer_dict, comment_dict, question_accepted_answer_dict, accepted_answer_question_dict, question_answer_dict, answer_question_dict, question_comment_dict = make_dicts(file)
+        parse_file(categorie, question_dict, answer_dict, comment_dict, question_accepted_answer_dict, accepted_answer_question_dict,
+            question_answer_dict, answer_question_dict, question_comment_dict)
 
-    # make a json from the dictionary
-    dict_to_json('data.txt', result_dict)
+    print('done')
+
+
 
 main()
-
