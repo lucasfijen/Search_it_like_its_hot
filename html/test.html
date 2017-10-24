@@ -1,4 +1,5 @@
-<html5>
+<!DOCTYPE html>
+<html>
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
@@ -8,9 +9,17 @@
                 $('#results').animate({left: '+=1800px'}, 600, function(){
                     $("#results").css('display', 'block');
                 });
+                $('#questionbar').css({
+                                    'background-image': 'url("images/fire.gif")',
+                                    'background-size': '100% 100%'});
 
                 $('#askbutton').delay(600).animate({left: '-=1800px'}, 10000);
                 $('#results').delay(600).animate({left: '-=1800px'}, 10000);
+                setTimeout( function(){
+                    $('#questionbar').css({
+                                        'background-image': '',
+                                        'background-size': ''});
+                }, 10600);
             });
         });
     </script>
@@ -24,11 +33,12 @@
 
     <div id='searchitems'>
         <input type='text' id='questionbar' value='Wat wilt u zoeken?'><br>
-        <button id='askbutton'>Zoeken!</button><br>
+        <button class="button" id='askbutton'><span>Zoeken<span></button>
     </div>
 
     <div id='results'>
-        <h1>Resultatendiv</h1>
+        <h1>Resultaten</h1>
+        <p>BlaBlaBla</p>
     </div>
 
 </body>
