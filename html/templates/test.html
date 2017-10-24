@@ -1,0 +1,60 @@
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#askbutton").on("click", function() {
+                $('#askbutton').animate({left: '+=1800px'}, 600);
+                $('#result').animate({left: '+=1800px'}, 600, function(){
+                    $("#result").css('display', 'block');
+                });
+                $('#questionbar').css({
+                                    'background-image': 'url("/static/images/fire.gif")',
+                                    'background-size': '100% 100%'});
+
+                $('#askbutton').delay(600).animate({left: '-=1800px'}, 10000);
+                $('#result').delay(600).animate({left: '-=1800px'}, 10000);
+                setTimeout( function(){
+                    $('#questionbar').css({
+                                        'background-image': '',
+                                        'background-size': ''});
+                }, 10600);
+            });
+        });
+    </script>
+    <link rel="favicon" href="">
+    <link rel="stylesheet" type='text/css' href="/static/style.css">
+</head>
+
+<body>
+    <div id='header'>
+        <img src='/static/images/foto.jpg'; id='logo'>
+    </div>
+    <div id='searchitems'>
+        <form id="searchform">
+            <input type='text' name="questionbar" id='questionbar' value='Wat wilt u zoeken?'><br>
+            <button class="button" type="submit" id='askbutton'><span>Zoeken<span></button>
+        </form>
+    </div>
+
+    <div id='result'>
+    </div>
+
+
+</body>
+<script>
+    (function($){
+        function processForm( e ){
+            $.post("http://localhost:5000/tryout",
+                    $('#searchform').serialize(),
+                    function(result){
+                        setTimeout( function(){
+                            $('#result').text(result);
+                        }, 600);
+            });
+            e.preventDefault();
+        }
+        $('#searchform').submit(processForm);
+    })(jQuery);
+</script>
+</html>
