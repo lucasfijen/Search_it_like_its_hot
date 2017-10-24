@@ -107,8 +107,8 @@ def make_dicts_from_file(file):
     os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r')
 
     text_file = open('Posts.xml', 'r')
-    
-    for line in text_file:
+
+    for i,line in enumerate(text_file):
         soup = bs(line, 'lxml')
         try:
             soup = soup.findAll('row')[0]
@@ -141,20 +141,32 @@ def make_dicts_from_file(file):
 
 def make_dicts(file):
 
+    print('first')
     question_dict, answer_dict, comment_dict = make_dicts_from_file(file)
 
+    print('done')
+
+    print('second')
     question_accepted_answer_dict, accepted_answer_question_dict = make_accepted_answer_dict(question_dict)
 
+    print('done')
+
+    print('third')
     question_answer_dict, answer_question_dict = make_answer_dict(answer_dict, accepted_answer_question_dict)
 
+    print('done')
+
+    print('fourth')
     question_comment_dict = make_question_comment_dict(question_dict, comment_dict, answer_question_dict, accepted_answer_question_dict)
 
+    print('return')
     return question_dict, answer_dict, comment_dict, question_accepted_answer_dict, accepted_answer_question_dict, question_answer_dict, answer_question_dict, question_comment_dict
 
 ########## Parser ###########
 
 def parse_file(categorie, question_dict, answer_dict, comment_dict, question_accepted_answer_dict, accepted_answer_question_dict,
             question_answer_dict, answer_question_dict, question_comment_dict):
+
     for question in question_dict.keys():
         soup = bs(question_dict[question], 'lxml')
         soup = soup.findAll('row')[0]
@@ -178,9 +190,6 @@ def parse_file(categorie, question_dict, answer_dict, comment_dict, question_acc
             soup = soup.findAll('row')[0]
             result['accepted_answer'] = clean_text(soup.get('body'))
             result['accepted_answer_score'] = soup.get('score')
-
-        else:
-            print('no accepted answer')
 
         if row_id in question_answer_dict:
             answers = question_answer_dict[row_id]
@@ -212,6 +221,7 @@ def main():
 
     for file in os.listdir('dataset'):
         categorie = file[:-21]
+        print(categorie)
         question_dict, answer_dict, comment_dict, question_accepted_answer_dict, accepted_answer_question_dict, question_answer_dict, answer_question_dict, question_comment_dict = make_dicts(file)
         parse_file(categorie, question_dict, answer_dict, comment_dict, question_accepted_answer_dict, accepted_answer_question_dict,
             question_answer_dict, answer_question_dict, question_comment_dict)
