@@ -19,11 +19,14 @@ def make_query(text, categories):
 	                    ]
 	                }
 	            },
-	            "filter": {
-	                "terms": {
-	                    "categorie": categories
-	                }
-	            }
+	           	"filter": {
+	           		"bool":{
+	           			"must":	[
+		           			{"range": {"score": {"gt": 8}}},
+		           			{"terms": {"categorie": categories}}
+	           			]
+	            	}
+	            },
 	        }
 	    }
 	}
