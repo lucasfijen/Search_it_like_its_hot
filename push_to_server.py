@@ -2,7 +2,7 @@ from elasticsearch import Elasticsearch
 import sys
 import os
 import json
-import timeit
+import time
 HOST = "http://localhost:9200/"
 es = Elasticsearch(hosts=[HOST])
 
@@ -32,7 +32,7 @@ mapping = {
 #es.indices.create(index = 'test', body = mapping)
 #es.indices.delete(index='documents_test')
 
-start = timeit.timeit()
+start = time.time()
 folder = tuple(os.listdir('json_files'))
 
 for file in folder:
@@ -42,7 +42,7 @@ for file in folder:
 
 	es.index(index='test', doc_type='document', id=data['id'], body=data)
 
-end = timeit.timeit()
+end = time.time()
 
 print(end - start)
 
