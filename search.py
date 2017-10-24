@@ -30,21 +30,21 @@ def make_query(text, categories):
 		"query": {
 			"multi_match" : {
 				"query": text, 
-				"fields": ["title", "accepted_answer"] 
+				"fields": ["title", "accepted_answer", "answers^2", "comments"] 
 			}
-		}
+		},
+	    # "sort": [
+	    #     { "_score": { "order": "desc" }}
+	    # ]
 	}
 
 	return result
 
-def search_in_index(index, text, categorie, size=1):
+def search_in_index(index, text, categorie, size=100):
 	res = es.search(index=index, body=make_query(text, categorie) , size=size)
-	res = res['hits']['hits']
-	for article in res:
+	for article in res['hits']['hits']:
 		print(article['_source']['title'], article['_score'])
 
-	print(len(res), 'results found')
+	print(res['hits']['total'], 'results found')
 
-start = timeit.timeit()
-search_in_index('test', "material", ['3dprinting'])
-print(timeit.timeit()- start)
+search_in_index('test', "material", ['ai'])

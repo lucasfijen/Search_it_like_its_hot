@@ -108,22 +108,25 @@ def make_dicts_from_file(file):
 
     text_file = open('Posts.xml', 'r')
 
-    for i,line in enumerate(text_file):
-        soup = bs(line, 'lxml')
-        try:
-            soup = soup.findAll('row')[0]
-        except: continue
+    # for i,line in enumerate(text_file):
+    #     print(i)
+    #     soup = bs(line, 'lxml')
+    #     try:
+    #         soup = soup.findAll('row')[0]
+    #     except: continue
 
-        if soup['posttypeid'] == '1':
-            question_dict[soup.get('id')] = line
-        elif soup['posttypeid'] == '2':
-            answer_dict[soup.get('id')] = line
+    #     if soup['posttypeid'] == '1':
+    #         #question_dict[soup.get('id')] = line
+    #         pass
+    #     elif soup['posttypeid'] == '2':
+    #         answer_dict[soup.get('id')] = line
 
     text_file.close()
 
     text_file = open('Comments.xml', 'r')
     
     for i,line in enumerate(text_file):
+        print(i)
         if i >= 2:
             soup = bs(line, 'lxml')
             try:
