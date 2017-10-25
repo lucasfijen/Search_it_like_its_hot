@@ -13,7 +13,7 @@ def clean_text(s):
         return ""
     s = re.sub("<[^>]*>", " ", s) # remove html tags
     s = s.replace("\n", " ") # remove newlines
-    s = re.sub("\W\W+", " ", s) # remove multiple spaces
+    s = re.sub("\s\s+", " ", s) # remove multiple spaces
     return s
 
 def clean_tags(s):
@@ -73,7 +73,7 @@ def parse_answers(text_file, categorie, answer_dict, question_answer_dict):
         result = {"answers":"", "comments":"", "answer_score":0, "comment_score":0}
         result['id'] = categorie + row_id
         result["categorie"] = categorie
-        result["title"] = soup.get('title')
+        result["title"] = clean_text(soup.get('title'))
         result["tags"] = clean_tags(soup.get('tag'))
         result["body"] = clean_text(soup.get('body'))
         result["viewcount"] = int(soup.get('viewcount'))
@@ -134,7 +134,7 @@ def parse_comments(text_file, categorie, answer_question_dict):
         except:
             continue
         data['comment_score'] += int(soup.get('score'))
-        data['comments'] += soup.get('text')
+        data['comments'] += clean_text(soup.get('text'))
 
         dict_to_json(data)
 
