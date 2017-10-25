@@ -20,7 +20,7 @@ div#searchitems {
     width: 70%;
 }
 
-
+/* ---------------------- Form ---------------------- */
 #questionbar {
     display: block;
     margin: auto;
@@ -36,6 +36,7 @@ div#searchitems {
     margin-left: calc(50% - 50px);
 }
 
+/* ---------------------- Results ---------------------- */
 #result {
     position: relative;
     display:none;
@@ -44,7 +45,17 @@ div#searchitems {
 }
 
 #resultdiv {
-    padding: 5px 20px ;
-    background-color: #f6f6f6;
+    margin-top: 20px;
+    padding: 10px 20px ;
+    background-color: #fafafa;
     box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+}
+
+#resultdiv a:link {
+    font-size: 20;
+    text-decoration: none;
+}
+
+#resultdiv a:hover {
+    text-decoration: underline;
 }

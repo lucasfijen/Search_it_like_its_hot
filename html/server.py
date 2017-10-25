@@ -18,11 +18,10 @@ def helloa(name):
 def handlerhandler():
     if request.method == 'POST':
         text = request.form.get('questionbar')
-        # return text
         result = handle.query_handler(text)
         return result
     else:
-        return 'ELSE'
+        return 'ERROR'
 
 
 @app.route('/')

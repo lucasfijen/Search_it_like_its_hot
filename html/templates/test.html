@@ -24,10 +24,11 @@
                     $('#questionbar').css({
                                         'background-image': '',
                                         'background-size': ''});
-                }, rightspeed + leftspeed);
+                }, (rightspeed + leftspeed));
             });
         });
     </script>
+    <title>Search it like it's hot</title>
 </head>
 
 <body>
@@ -36,7 +37,11 @@
     </div>
     <div id='searchitems'>
         <form id="searchform">
-            <input type='text' name="questionbar" id='questionbar' value='Wat wilt u zoeken?'><br>
+            <input type='text'
+                   name="questionbar"
+                   id='questionbar'
+                   onfocus="if(this.value == 'Wat wilt u zoeken?') { this.value = ''; }"
+                   value='Wat wilt u zoeken?'><br>
             <button class="button" type="submit" id='askbutton'><span>Zoeken<span></button>
         </form>
     </div>
