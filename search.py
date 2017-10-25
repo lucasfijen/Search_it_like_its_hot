@@ -7,60 +7,32 @@ import pprint
 HOST = 'http://localhost:9200/'
 es = Elasticsearch(hosts=[HOST])
 
-def make_query(text, categories):
-	question = {
-	"multi_match":{
-		"query": text,
-		"fields" : [
-                "title^2",
-                "body"
-				]
-	}},
+def make_query(text, categories, date, datetype):
+	fields = ["title^2", "body"]
+	query = {}
+	query['bool'] = {"filter": {"bool": {"must": []}}}
 
-	question_filter = {
-	"bool": {
-		"filter": {
-			"bool": {
-				"must": [
-					{"range": {"score": {"gt": 8}}}, 
-						{"terms": {"categorie": categories}}]}}}}
+	if len(categories) > 0:
+		query["bool"]["filter"]["bool"]["must"].append({"terms": {"categorie": categories}}) 
 
-	print(question[0])
-	print(question_filter)
-	result = {"query": question[0] + question_filter}
-	return result
+	if date and datetype:
+		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {datetype: date}}}) 
 
-def search_in_index(index, text, categorie, size=10):
-	res = es.search(index = index, body = make_query(text, categorie) , size=size)
+	query["bool"]['must'] = {"multi_match": {"fields": fields, "query": text}}
+
+	return {"query": query}
+
+def search_in_index(index='test', text="", categories=[], date=None, datetype=None, size=10):
+	res = es.search(index = index, body = make_query(text, categories, date, datetype) , size=size)
 	for article in res['hits']['hits']:
-		print(article['_source']['title'])
+		print(article['_source']['link'])
 
 	print(res['hits']['total'], 'results found')
 
 	return res
 
 # start = time.time()
-search_in_index('test', "material", ['3dprinting'])
+search_in_index(text="material", categories=['3dprinting'], date="2017", datetype="gt")
 # end = time.time()
 
 # print(end - start)
-
-		        # "bool": {
-		        #     "must": {
-		        #         "multi_match": {
-		        #             "query": text,
-		        #             "fields": [
-		        #                 "title^2",
-		        #                 "body"
-		        #             ]
-		        #         }
-		        #     },
-		        #    	"filter": {
-		        #    		"bool":{
-		        #    			"must":	[
-			       #     			{"range": {"score": {"gt": 8}}},
-			       #     			{"terms": {"categorie": categories}}
-		        #    			]
-		        #     	}
-		        #     },
-		        # }
