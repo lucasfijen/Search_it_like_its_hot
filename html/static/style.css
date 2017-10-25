@@ -25,13 +25,13 @@ div#searchitems {
 #askbutton {
     display: block;
     position: absolute;
-    width: 10%;
+    width: 100;
     text-align: center;
-    margin-left: 45%;
+    margin-left: calc(50% - 50px);
 }
 
 #result {
     position: relative;
     display:none;
-    left:200px;
+    margin-left: 20%;
 }
