@@ -1,12 +1,12 @@
 import testsearch
-
+import search
 
 # Convert input_text to prepare for request
 def query_handler(input_text):
     htmltext = ""
     # Add here extra data that needs to be showed above
 
-    results = testsearch.search()
+    results = search.search_in_index(text=input_text)
 
     for article in results['hits']['hits']:
         htmltext += create_div_from_dict(article)
