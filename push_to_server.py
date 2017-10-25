@@ -3,6 +3,8 @@ import sys
 import os
 import json
 import time
+from elasticsearch import  helpers
+
 HOST = "http://localhost:9200/"
 es = Elasticsearch(hosts=[HOST])
 
@@ -29,21 +31,13 @@ mapping = {
 	}
 }
 
+es.indices.delete(index='test')
 #es.indices.create(index = 'test', body = mapping)
-#es.indices.delete(index='documents_test')
 
-start = time.time()
-folder = tuple(os.listdir('json_files'))
 
-for file in folder:
-	print(folder.index(file))
-	with open('json_files/' + file) as data_file:    
-		data = json.load(data_file)
+folder = tuple(os.listdir('json_bulks'))
 
-	es.index(index='test', doc_type='document', id=data['id'], body=data)
-
-end = time.time()
-
-print(end - start)
-
+for bulk in folder:
+	print(bulk)
+	os.system("curl -s -XPOST http://localhost:9200/_bulk --data-binary @json_bulks/" + bulk)
 

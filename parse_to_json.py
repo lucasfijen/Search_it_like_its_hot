@@ -26,7 +26,7 @@ def clean_tags(s):
 def dict_to_json(result_dict):
     file = result_dict['id']
     with open('json_files/' + file + '.json', 'w') as outfile:  
-        json.dump(result_dict, outfile, indent=4) # REMOVE INDENT LATER!!!!
+        json.dump(result_dict, outfile) # REMOVE INDENT LATER!!!!
 
 def make_dicts_from_Posts(text_file):
     answer_dict = {}
@@ -95,14 +95,17 @@ def parse_answers(text_file, categorie, answer_dict, question_answer_dict):
             answers.remove(accepted_answer)
 
             aa_soup = bs(answer_dict[accepted_answer], 'lxml')
+            del answer_dict[accepted_answer]
             aa_soup = aa_soup.findAll('row')[0]
             result['accepted_answer'] = clean_text(aa_soup.get('body'))
             result['accepted_answer_score'] = int(aa_soup.get('score'))
+
         except: pass
 
         # get the other answers
         for answer in answers:
             a_soup = bs(answer_dict[answer], 'lxml')
+            del answer_dict[answer]
             a_soup = a_soup.findAll('row')[0]
             result['answers'] += clean_text(a_soup.get('body'))
             result['answer_score'] += int(a_soup.get('score'))
@@ -151,7 +154,7 @@ def main():
         print("Posts and Answers")
         text_file = open('Posts.xml', 'r')
         parse_answers(text_file, categorie, answer_dict, question_answer_dict)
-        answer_dict = {}
+        del answer_dict
         text_file.close()
 
         print("Comments")
@@ -161,7 +164,8 @@ def main():
 
         os.system('rm Posts.xml Comments.xml')
 
-        question_answer_dict = answer_question_dict = {}
+        del question_answer_dict 
+        del answer_question_dict
 
     print('done')    
 
