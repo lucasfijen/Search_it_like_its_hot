@@ -1,4 +1,3 @@
-import testsearch
 import search
 
 # Convert input_text to prepare for request
