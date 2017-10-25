@@ -5,8 +5,9 @@
 # https://codehandbook.org/python-flask-jquery-ajax-post/
 from flask import Flask, request, jsonify
 from flask import render_template
-app = Flask(__name__)
+import queryhandler as handle
 
+app = Flask(__name__)
 
 @app.route("/hello/<name>")
 def helloa(name):
@@ -16,9 +17,11 @@ def helloa(name):
 @app.route('/tryout', methods=['POST'])
 def handlerhandler():
     if request.method == 'POST':
-        return request.form.get('questionbar')
+        text = request.form.get('questionbar')
+        result = handle.query_handler(text)
+        return result
     else:
-        return 'ELSE'
+        return 'ERROR'
 
 
 @app.route('/')

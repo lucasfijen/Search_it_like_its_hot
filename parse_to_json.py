@@ -1,8 +1,10 @@
 from bs4 import BeautifulSoup as bs
+from multiprocessing import Process
 import re
 import json
 import os
 import sys
+import time
 
 ########## cleanup ##########
 
@@ -11,7 +13,7 @@ def clean_text(s):
         return ""
     s = re.sub("<[^>]*>", " ", s) # remove html tags
     s = s.replace("\n", " ") # remove newlines
-    s = re.sub("\W\W+", " ", s) # remove multiple spaces
+    s = re.sub("\s\s+", " ", s) # remove multiple spaces
     return s
 
 def clean_tags(s):
@@ -26,7 +28,7 @@ def clean_tags(s):
 def dict_to_json(result_dict):
     file = result_dict['id']
     with open('json_files/' + file + '.json', 'w') as outfile:  
-        json.dump(result_dict, outfile, indent=4) # REMOVE INDENT LATER!!!!
+        json.dump(result_dict, outfile) # REMOVE INDENT LATER!!!!
 
 def make_dicts_from_Posts(text_file):
     answer_dict = {}
@@ -71,7 +73,7 @@ def parse_answers(text_file, categorie, answer_dict, question_answer_dict):
         result = {"answers":"", "comments":"", "answer_score":0, "comment_score":0}
         result['id'] = categorie + row_id
         result["categorie"] = categorie
-        result["title"] = soup.get('title')
+        result["title"] = clean_text(soup.get('title'))
         result["tags"] = clean_tags(soup.get('tag'))
         result["body"] = clean_text(soup.get('body'))
         result["viewcount"] = int(soup.get('viewcount'))
@@ -95,14 +97,17 @@ def parse_answers(text_file, categorie, answer_dict, question_answer_dict):
             answers.remove(accepted_answer)
 
             aa_soup = bs(answer_dict[accepted_answer], 'lxml')
+            del answer_dict[accepted_answer]
             aa_soup = aa_soup.findAll('row')[0]
             result['accepted_answer'] = clean_text(aa_soup.get('body'))
             result['accepted_answer_score'] = int(aa_soup.get('score'))
+
         except: pass
 
         # get the other answers
         for answer in answers:
             a_soup = bs(answer_dict[answer], 'lxml')
+            del answer_dict[answer]
             a_soup = a_soup.findAll('row')[0]
             result['answers'] += clean_text(a_soup.get('body'))
             result['answer_score'] += int(a_soup.get('score'))
@@ -129,40 +134,41 @@ def parse_comments(text_file, categorie, answer_question_dict):
         except:
             continue
         data['comment_score'] += int(soup.get('score'))
-        data['comments'] += soup.get('text')
+        data['comments'] += clean_text(soup.get('text'))
 
         dict_to_json(data)
 
 
 ########## MAIN ##########
 
-def main():
+def main(file):
+    categorie = file[:-21]
+    print(categorie)
+    os.system('mkdir' + categorie)
+    os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r -o' + categorie)
 
-    for file in os.listdir('dataset'):
-        categorie = file[:-21]
-        print(categorie)
-        os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r')
+    print("Post dict")
+    text_file = open(categorie+'/Posts.xml', 'r')
+    answer_dict, question_answer_dict, answer_question_dict = make_dicts_from_Posts(text_file)
+    text_file.close()
 
-        print("Post dict")
-        text_file = open('Posts.xml', 'r')
-        answer_dict, question_answer_dict, answer_question_dict = make_dicts_from_Posts(text_file)
-        text_file.close()
+    print("Posts and Answers")
+    text_file = open(categorie+'/Posts.xml', 'r')
+    parse_answers(text_file, categorie, answer_dict, question_answer_dict)
+    del answer_dict
+    text_file.close()
 
-        print("Posts and Answers")
-        text_file = open('Posts.xml', 'r')
-        parse_answers(text_file, categorie, answer_dict, question_answer_dict)
-        answer_dict = {}
-        text_file.close()
+    print("Comments")
+    text_file = open(categorie+'/Comments.xml', 'r')
+    parse_comments(text_file, categorie, answer_question_dict)
+    text_file.close()
 
-        print("Comments")
-        text_file = open('Comments.xml', 'r')
-        parse_comments(text_file, categorie, answer_question_dict)
-        text_file.close()
+    os.system('rm -rf ' + categorie)
 
-        os.system('rm Posts.xml Comments.xml')
+folder = os.listdir('dataset')
 
-        question_answer_dict = answer_question_dict = {}
+for file in folder:
+    p = Process(target = main, args = [file,])
 
-    print('done')    
-
-main()
+    p.start()
+p.join()

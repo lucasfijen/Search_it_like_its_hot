@@ -1,29 +1,34 @@
 <html>
 <head>
+    <link rel="favicon" href="">
+    <link rel="stylesheet" type='text/css' href="/static/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
+        var rightspeed = 600;
+        var leftspeed = 1000;
+        var width = $(window).width();
+        var rightsize = (width * 0.8);
         $(document).ready(function() {
             $("#askbutton").on("click", function() {
-                $('#askbutton').animate({left: '+=1800px'}, 600);
-                $('#result').animate({left: '+=1800px'}, 600, function(){
+                $('#askbutton').animate({left: '+=' + rightsize}, rightspeed);
+                $('#result').animate({left: '+=' + rightsize}, rightspeed, function(){
                     $("#result").css('display', 'block');
                 });
                 $('#questionbar').css({
                                     'background-image': 'url("/static/images/fire.gif")',
                                     'background-size': '100% 100%'});
 
-                $('#askbutton').delay(600).animate({left: '-=1800px'}, 10000);
-                $('#result').delay(600).animate({left: '-=1800px'}, 10000);
+                $('#askbutton').delay(rightspeed).animate({left: '-=' + rightsize}, leftspeed);
+                $('#result').delay(rightspeed).animate({left: '-=' + rightsize}, leftspeed);
                 setTimeout( function(){
                     $('#questionbar').css({
                                         'background-image': '',
                                         'background-size': ''});
-                }, 10600);
+                }, (rightspeed + leftspeed));
             });
         });
     </script>
-    <link rel="favicon" href="">
-    <link rel="stylesheet" type='text/css' href="/static/style.css">
+    <title>Search it like it's hot</title>
 </head>
 
 <body>
@@ -32,7 +37,11 @@
     </div>
     <div id='searchitems'>
         <form id="searchform">
-            <input type='text' name="questionbar" id='questionbar' value='Wat wilt u zoeken?'><br>
+            <input type='text'
+                   name="questionbar"
+                   id='questionbar'
+                   onfocus="if(this.value == 'Wat wilt u zoeken?') { this.value = ''; }"
+                   value='Wat wilt u zoeken?'><br>
             <button class="button" type="submit" id='askbutton'><span>Zoeken<span></button>
         </form>
     </div>
@@ -49,8 +58,8 @@
                     $('#searchform').serialize(),
                     function(result){
                         setTimeout( function(){
-                            $('#result').text(result);
-                        }, 600);
+                            $('#result').html(result);
+                        }, rightspeed);
             });
             e.preventDefault();
         }
