@@ -15,7 +15,7 @@ for i, file in enumerate(os.listdir(folder)):
 
 	with open(folder + '/' + file, 'r') as text_file:
 		for line in text_file:
-			write_file.write('{"index" : {"_index": "test", "_type": "document", "_id":\"'+file+'\"}}\n')
+			write_file.write('{"index" : {"_index": "test", "_type": "document", "_id":\"'+file[:-5]+'\"}}\n')
 			write_file.write(line)
 			write_file.write('\n')
 
