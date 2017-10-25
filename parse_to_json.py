@@ -1,8 +1,10 @@
 from bs4 import BeautifulSoup as bs
+from multiprocessing import Process
 import re
 import json
 import os
 import sys
+import time
 
 ########## cleanup ##########
 
@@ -139,34 +141,34 @@ def parse_comments(text_file, categorie, answer_question_dict):
 
 ########## MAIN ##########
 
-def main():
+def main(file):
+    categorie = file[:-21]
+    print(categorie)
+    os.system('mkdir' + categorie)
+    os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r -o' + categorie)
 
-    for file in os.listdir('dataset'):
-        categorie = file[:-21]
-        print(categorie)
-        os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r')
+    print("Post dict")
+    text_file = open(categorie+'/Posts.xml', 'r')
+    answer_dict, question_answer_dict, answer_question_dict = make_dicts_from_Posts(text_file)
+    text_file.close()
 
-        print("Post dict")
-        text_file = open('Posts.xml', 'r')
-        answer_dict, question_answer_dict, answer_question_dict = make_dicts_from_Posts(text_file)
-        text_file.close()
+    print("Posts and Answers")
+    text_file = open(categorie+'/Posts.xml', 'r')
+    parse_answers(text_file, categorie, answer_dict, question_answer_dict)
+    del answer_dict
+    text_file.close()
 
-        print("Posts and Answers")
-        text_file = open('Posts.xml', 'r')
-        parse_answers(text_file, categorie, answer_dict, question_answer_dict)
-        del answer_dict
-        text_file.close()
+    print("Comments")
+    text_file = open(categorie+'/Comments.xml', 'r')
+    parse_comments(text_file, categorie, answer_question_dict)
+    text_file.close()
 
-        print("Comments")
-        text_file = open('Comments.xml', 'r')
-        parse_comments(text_file, categorie, answer_question_dict)
-        text_file.close()
+    os.system('rm -rf ' + categorie)
 
-        os.system('rm Posts.xml Comments.xml')
+folder = os.listdir('dataset')
 
-        del question_answer_dict 
-        del answer_question_dict
+for file in folder:
+    p = Process(target = main, args = [file,])
 
-    print('done')    
-
-main()
+    p.start()
+p.join()
