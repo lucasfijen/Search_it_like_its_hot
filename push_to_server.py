@@ -11,8 +11,8 @@ es = Elasticsearch(hosts=[HOST])
 mapping = {
 	"mapping": {
 		"event": {
-			"properties": {  
-				"id": {"type":"string"},	
+			"properties": {
+				"id": {"type":"string"},
 		        "answers": {"type":"string", "analyzer": "english"},
 		        "comments": {"type":"string", "analyzer": "english"},
 		        "answer_score": {"type":"integer"},
@@ -31,7 +31,10 @@ mapping = {
 	}
 }
 
-es.indices.delete(index='test')
+try:
+	es.indices.delete(index='test')
+except:
+	pass
 #es.indices.create(index = 'test', body = mapping)
 
 
@@ -40,4 +43,3 @@ folder = tuple(os.listdir('json_bulks'))
 for bulk in folder:
 	print(bulk)
 	os.system("curl -s -XPOST http://localhost:9200/_bulk --data-binary @json_bulks/" + bulk)
-

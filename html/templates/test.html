@@ -5,11 +5,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
         var rightspeed = 600;
-        var leftspeed = 10000;
+        var leftspeed = 1000;
         var width = $(window).width();
-        alert(width);
         var rightsize = (width * 0.8);
-        alert(rightsize);
         $(document).ready(function() {
             $("#askbutton").on("click", function() {
                 $('#askbutton').animate({left: '+=' + rightsize}, rightspeed);
@@ -55,7 +53,7 @@
                     $('#searchform').serialize(),
                     function(result){
                         setTimeout( function(){
-                            $('#result').text(result);
+                            $('#result').html(result);
                         }, rightspeed);
             });
             e.preventDefault();
