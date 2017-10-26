@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import time
+import datetime
 
 ########## cleanup ##########
 
@@ -22,6 +23,9 @@ def clean_tags(s):
     s = re.sub("<|>"," ", s) # strip xml tags
     s = re.sub("\s\s+"," ", s) # change multiple spaces to single space
     return s.strip()
+
+def make_datetime(date):
+    return date[:-4]
 
 ########## file management ##########
 
@@ -78,7 +82,7 @@ def parse_answers(text_file, categorie, answer_dict, question_answer_dict):
         result["body"] = clean_text(soup.get('body'))
         result["viewcount"] = int(soup.get('viewcount'))
         result["score"] = int(soup.get('score'))
-        result["creation_date"] = soup.get('creationdate')
+        result["creation_date"] = make_datetime(soup.get('creationdate'))
         result["link"] = categorie + ".stackexchange.com/questions/" + row_id + "/" \
                                         + result["title"].replace(" ", "-")
 
@@ -138,15 +142,18 @@ def parse_comments(text_file, categorie, answer_question_dict):
 
         dict_to_json(data)
 
+########## extract ##########
+
+def extract_files(file):
+    categorie = file[:-21]
+    os.system('mkdir' + categorie)
+    os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r -o' + categorie)
 
 ########## MAIN ##########
 
 def main(file):
     categorie = file[:-21]
     print(categorie)
-    os.system('mkdir' + categorie)
-    os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r -o' + categorie)
-
     print("Post dict")
     text_file = open(categorie+'/Posts.xml', 'r')
     answer_dict, question_answer_dict, answer_question_dict = make_dicts_from_Posts(text_file)
@@ -168,7 +175,13 @@ def main(file):
 folder = os.listdir('dataset')
 
 for file in folder:
+    extract_files(file)
+
+for file in folder:
     p = Process(target = main, args = [file,])
 
     p.start()
+
+    p.join()
+
 p.join()
