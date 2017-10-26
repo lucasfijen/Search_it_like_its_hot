@@ -14,6 +14,7 @@ request_body = {
         "number_of_replicas": 0
     }
 }
+
 mapping = {
 		"document": {
 			"properties": {
@@ -21,7 +22,6 @@ mapping = {
 				"title": {"type":"string", "analyzer": "english"},
 				"body": {"type":"string", "analyzer": "english"},
 				"categorie": {"type":"keyword"},
-		        "tags": {"type":"keyword"},
 		        "viewcount": {"type":"integer"},
 		        "score": {"type":"integer"},
 		        "creation_date": {"type":"date", "format": "date_hour_minute_second"},
