@@ -16,15 +16,16 @@ for doc in doc_list:
     cloud = WordCloud().generate(text)
 
     # Display the generated image:
-
+    #
     # plt.imshow(cloud, interpolation='bilinear')
     # plt.axis("off")
-    #plt.show()
+    # plt.show()
+    # plt.close()
 
     # # lower max_font_size
     # cloud = WordCloud(max_font_size=40).generate(text)
     # store file
-    cloud.to_file('clouds/' + doc[:-5] + ".png")
+    # cloud.to_file('clouds/' + doc[:-5] + ".png")
     #
     # plt.figure()
     # plt.imshow(cloud, interpolation="bilinear")
