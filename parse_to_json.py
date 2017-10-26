@@ -141,17 +141,12 @@ def parse_comments(text_file, categorie, answer_question_dict):
 
         dict_to_json(data)
 
-########## extract ##########
-
-def extract_files(file):
-    categorie = file[:-21]
-    os.system('mkdir' + categorie)
-    os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r -o' + categorie)
-
 ########## MAIN ##########
 
 def main(file):
     categorie = file[:-21]
+    os.system('mkdir' + categorie)
+    os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r -o' + categorie)
     print(categorie)
     print("Post dict")
     text_file = open(categorie+'/Posts.xml', 'r')
@@ -172,9 +167,6 @@ def main(file):
     os.system('rm -rf ' + categorie)
 
 folder = os.listdir('dataset')
-
-for file in folder:
-    extract_files(file)
 
 for file in folder:
     p = Process(target = main, args = [file,])

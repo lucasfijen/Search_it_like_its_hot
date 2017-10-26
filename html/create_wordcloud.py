@@ -17,6 +17,7 @@ def main(doc):
     data += doc['title']
 
     cloud = WordCloud().generate(data)
+    
     #store file
     cloud.to_file('static/clouds/' + doc['id'] + ".png")
 
