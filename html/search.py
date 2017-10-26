@@ -37,11 +37,6 @@ def make_query(text, categories, date, datetype):
 
 def search_in_index(index='index', text="", categories=[], date=None, datetype=None, size=10):
 	res = es.search(index = index, body = make_query(text, categories, date, datetype) , size=size)
-	for article in res['hits']['hits']:
-		print(article['_source']['title'])
-
-	print(res['hits']['total'], 'results found')
-	#pprint.pprint(res['aggregations'])
 	
 	return res
 
