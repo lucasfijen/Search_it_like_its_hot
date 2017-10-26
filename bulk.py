@@ -20,3 +20,4 @@ for i, file in enumerate(os.listdir(folder)):
 			write_file.write('\n')
 
 write_file.close()
+print()
