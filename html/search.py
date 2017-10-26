@@ -37,11 +37,6 @@ def make_query(text, categories, date, datetype):
 
 def search_in_index(index='index', text="", categories=[], date=None, datetype=None, size=10):
 	res = es.search(index = index, body = make_query(text, categories, date, datetype) , size=size)
-	for article in res['hits']['hits']:
-		print(article['_source']['title'])
-
-	print(res['hits']['total'], 'results found')
-	#pprint.pprint(res['aggregations'])
 	
 	return res
 
@@ -57,7 +52,7 @@ def get_all_categories():
 
 	result = []
 	for categorie in res['aggregations']['genres']['buckets']:
-		result.append(categorie['key'])
+		result.append(categorie['key'][:-3])
 
 	return result
 
@@ -65,5 +60,5 @@ def get_all_categories():
 
 
 
-#search_in_index(text="material", categories=['3dprinting'], date="2017", datetype="gt")
-print(get_all_categories())
+search_in_index(text="material", categories=['3dprinting'], date="2017", datetype="gt")
+#print(get_all_categories())
