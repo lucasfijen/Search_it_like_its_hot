@@ -1,4 +1,4 @@
-#import search
+import search
 
 # Convert input_text to prepare for request
 def query_handler(input_text):
@@ -49,7 +49,7 @@ def convert_string_to_dict(input_text):
         results['SIZE'] = 10
 
     print(results)
-convert_string_to_dict('cooking an egg EXCLUDE jan piet hein lul SIZE a0')
+#convert_string_to_dict('cooking an egg EXCLUDE jan piet hein lul SIZE a0')
 
 
 # creates a single div for a articledict
