@@ -165,8 +165,6 @@ def main(file):
     parse_comments(text_file, categorie, answer_question_dict)
     text_file.close()
 
-    os.system('rm -rf ' + categorie)
-
 class Engine(object):
     def __call__(self, file):
         main(file)
@@ -181,5 +179,3 @@ try:
 finally: # To make sure processes are closed in the end, even if errors happen
     pool.close()
     pool.join()
-
-os.system('rm -rf mapjes')
