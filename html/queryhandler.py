@@ -1,11 +1,11 @@
-#import search
+import search
 
 # Convert input_text to prepare for request
 def query_handler(input_text):
     htmltext = ""
-    # Add here extra data that needs to be showed above
-
     results = search.search_in_index(text=input_text)
+    htmltext += print_histo_values(results)
+    # Add here extra data that needs to be showed above
 
     for article in results['hits']['hits']:
         htmltext += create_div_from_dict(article)
@@ -121,4 +121,34 @@ def create_div_from_dict(article):
 
     return resultstring
 
-convert_string_to_dict('hallo ik ben een mongool CATEGORY NOT paard hallo TIME before 3203')
+def print_histo_values(res):
+	title = "Timeline"
+	data = res['aggregations']['hits_over_time']['buckets']
+
+	titel = "dit moet een mooie titel worden"
+	result = '''<div id='chartContainer'> </div>
+    <script type="text/javascript">
+	function make_graph() {
+	var chart = new CanvasJS.Chart("chartContainer",
+	{
+		title:{
+		text:\"'''
+	result += title
+	result += '''\"},
+		data: [
+			{
+			color: 'blue',
+			dataPoints: ['''
+	for line in data:
+		result += "{label:" + "\"" + line['key_as_string'][:-12] + "\", y:" + str(line['doc_count']) + '},'
+	result += ''']
+				}
+			]
+		});
+
+		chart.render();
+		}
+		make_graph()
+	 </script>'''
+
+	return result
