@@ -78,7 +78,6 @@ def parse_answers(text_file, categorie, answer_dict, question_answer_dict):
         result['id'] = categorie + row_id
         result["categorie"] = categorie
         result["title"] = clean_text(soup.get('title'))
-        result["tags"] = clean_tags(soup.get('tag'))
         result["body"] = clean_text(soup.get('body'))
         result["viewcount"] = int(soup.get('viewcount'))
         result["score"] = int(soup.get('score'))

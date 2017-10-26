@@ -57,7 +57,7 @@ def get_all_categories():
 
 	result = []
 	for categorie in res['aggregations']['genres']['buckets']:
-		result.append(categorie['key'])
+		result.append(categorie['key'][:-3])
 
 	return result
 
@@ -65,5 +65,5 @@ def get_all_categories():
 
 
 
-#search_in_index(text="material", categories=['3dprinting'], date="2017", datetype="gt")
-print(get_all_categories())
+search_in_index(text="material", categories=['3dprinting'], date="2017", datetype="gt")
+#print(get_all_categories())

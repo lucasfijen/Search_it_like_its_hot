@@ -1,22 +1,28 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-	<link rel="script" href="test.js">
-    <link rel="stylesheet" href="test.css">
-</head>
+  <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script></head>
+  <body>
+   <div id="chartContainer" style="height: 300px; width: 100%;">
+   </div>
 
-<body>
-	
-	<div id="graph">
-		  200<br /> <br /> <br /> 150 <br /> <br /> <br /> 100 <br /> <br /> <br /> 50
-		<ul>
-		  <li>30:2007</li>
-		  <li>40:2008</li>
-		  <li>80:2009</li>
-		  <li>14:2010</li>
-		</ul>
-		</div>
+<script type="text/javascript">
+	function make_graph() {
+	var chart = new CanvasJS.Chart("chartContainer",
+	{
+		title:{
+		text:"timeline voor query"},
+		data: [
+			{
+			color: 'blue',
+			dataPoints: [{label:"2016-01", y:120},{label:"2016-02", y:55},{label:"2016-03", y:65},{label:"2016-04", y:46},{label:"2016-05", y:55},{label:"2016-06", y:48},{label:"2016-07", y:35},{label:"2016-08", y:39},{label:"2016-09", y:30},{label:"2016-10", y:53},{label:"2016-11", y:32},{label:"2016-12", y:57},{label:"2017-01", y:58},{label:"2017-02", y:53},{label:"2017-03", y:37},{label:"2017-04", y:38},{label:"2017-05", y:57},{label:"2017-06", y:45},{label:"2017-07", y:36},{label:"2017-08", y:34},]
+				}
+			]
+		});
 
-	<div id="labels">Years : </div>
-
-</body>
+		chart.render();
+		}
+		make_graph()
+	 </script>
+ </body>
+</html>
