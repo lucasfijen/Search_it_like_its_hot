@@ -173,6 +173,4 @@ for file in folder:
 
     p.start()
 
-    p.join()
-
 p.join()
