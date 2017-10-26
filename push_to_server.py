@@ -14,6 +14,7 @@ request_body = {
         "number_of_replicas": 0
     }
 }
+
 mapping = {
 		"document": {
 			"properties": {

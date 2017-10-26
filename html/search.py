@@ -32,6 +32,7 @@ def make_query(text, categories, date, datetype):
 	            }
 	        }
 	    }
+	    
 	return {"query": query, 'aggs': aggs}
 
 def search_in_index(index='index', text="", categories=[], date=None, datetype=None, size=10):
