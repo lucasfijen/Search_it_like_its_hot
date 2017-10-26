@@ -21,5 +21,5 @@ def main(doc):
     #store file
     cloud.to_file('static/clouds/' + doc['id'] + ".png")
 
-    resultstring = "<div id='resultdiv'><img src='static/clouds/"+doc['id']+".png'></div>"
+    resultstring = "<aside id='wordcloud'><img id='wordcloudimg' src='static/clouds/"+doc['id']+".png'></aside>"
     return resultstring

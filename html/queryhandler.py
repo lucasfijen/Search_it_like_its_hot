@@ -10,8 +10,10 @@ def query_handler(input_text):
     # Add here extra data that needs to be showed above
 
     for article in results['hits']['hits']:
-        htmltext += create_wordcloud.main(article['_source'])
+        htmltext += '<div id="resultdiv">'
         htmltext += create_div_from_dict(article)
+        htmltext += create_wordcloud.main(article['_source'])
+        htmltext += '</div>'
     return htmltext
 
 def perform_search_from_dict(input_dict):
@@ -110,7 +112,7 @@ def handle_category(selected_cats):
 # creates a single div for a articledict
 def create_div_from_dict(article):
     article_dict = article['_source']
-    resultstring = "<div id='resultdiv'>"
+    resultstring = "<article id='query_result'>"
     if 'title' in article_dict:
         if 'link' in article_dict:
             resultstring += '<a href="http://' + article_dict['link'] + \
@@ -127,7 +129,7 @@ def create_div_from_dict(article):
             resultstring += '...'
         resultstring += '</p>'
 
-    resultstring += '</div>'
+    resultstring += '</article>'
 
     return resultstring
 
