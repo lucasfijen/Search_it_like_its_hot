@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import time
+import datetime
 
 ########## cleanup ##########
 
@@ -22,6 +23,9 @@ def clean_tags(s):
     s = re.sub("<|>"," ", s) # strip xml tags
     s = re.sub("\s\s+"," ", s) # change multiple spaces to single space
     return s.strip()
+
+def make_datetime(date):
+    return date[:-4]
 
 ########## file management ##########
 
@@ -78,7 +82,7 @@ def parse_answers(text_file, categorie, answer_dict, question_answer_dict):
         result["body"] = clean_text(soup.get('body'))
         result["viewcount"] = int(soup.get('viewcount'))
         result["score"] = int(soup.get('score'))
-        result["creation_date"] = soup.get('creationdate')
+        result["creation_date"] = make_datetime(soup.get('creationdate'))
         result["link"] = categorie + ".stackexchange.com/questions/" + row_id + "/" \
                                         + result["title"].replace(" ", "-")
 
