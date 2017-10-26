@@ -36,7 +36,7 @@ def make_query(text, categories, date, datetype):
 	    }
 	return {"query": query, 'aggs': aggs}
 
-def search_in_index(index='index', text="", categories=[], date=None, datetype=None, size=10):
+def search_in_index(index='index', text="", categories=[], date=None, datetype=None, size=1):
 	res = es.search(index = index, body = make_query(text, categories, date, datetype) , size=size)
 
 	return res
@@ -56,10 +56,3 @@ def get_all_categories():
 		result.append(categorie['key'])
 
 	return result
-
-
-
-
-#
-# search_in_index(text="material", categories=['3dprinting'], date="2017", datetype="gt")
-#print(get_all_categories())

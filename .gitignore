@@ -4,7 +4,7 @@ json_files
 json_files_2
 json_bulks
 html/__pycache__
-clouds
+html/static/clouds
 __pycache__/
 html/search.pyc
 html/queryhandler.pyc

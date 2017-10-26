@@ -18,7 +18,7 @@ def main(doc):
 
     cloud = WordCloud().generate(data)
     #store file
-    cloud.to_file('clouds/' + doc['id'] + ".png")
+    cloud.to_file('static/clouds/' + doc['id'] + ".png")
 
-    resultstring = "<div id='resultdiv'><img src='coulds/"+doc['id']+"'></div>"
+    resultstring = "<div id='resultdiv'><img src='static/clouds/"+doc['id']+".png'></div>"
     return resultstring

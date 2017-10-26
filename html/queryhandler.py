@@ -1,4 +1,5 @@
 import search
+import create_wordcloud
 
 # Convert input_text to prepare for request
 def query_handler(input_text):
@@ -9,13 +10,14 @@ def query_handler(input_text):
     # Add here extra data that needs to be showed above
 
     for article in results['hits']['hits']:
+        htmltext += create_wordcloud.main(article['_source'])
         htmltext += create_div_from_dict(article)
     return htmltext
 
 def perform_search_from_dict(input_dict):
     results = search.search_in_index(text=input_dict['TEXT'],
                                      categories=input_dict['CATEGORY'],
-                                     date=input_dict['TIME'],
+                                     date=input_dict['DATE'],
                                      datetype=input_dict['DATETYPE'],
                                      size=input_dict['SIZE'])
     return results
@@ -23,7 +25,7 @@ def perform_search_from_dict(input_dict):
 #convert_string_to_dict('cooking an egg EXCLUDE jan piet hein lul SIZE a0')
 def convert_string_to_dict(input_text):
     # text="", categories=[], date=None, datetype=None, size=10
-    results = {'TEXT':'', 'CATEGORY':[], 'EXCLUDE':[], 'TIME':[], 'SIZE':10}
+    results = {'TEXT':'', 'CATEGORY':[], 'EXCLUDE':[], 'DATE':[], 'SIZE':10}
 
     # make splitted query dict
     splitsquery = input_text.split()
@@ -31,7 +33,7 @@ def convert_string_to_dict(input_text):
     startvalue = 0
     for i in range(len(splitsquery)):
         if splitsquery[i] in results.keys():
-            if current_cat in ('CATEGORY', 'EXCLUDE', 'TIME'):
+            if current_cat in ('CATEGORY', 'EXCLUDE', 'DATE'):
                 results[current_cat] = splitsquery[startvalue:i]
             else:
                 results[current_cat] = " ".join(splitsquery[startvalue:i])
@@ -40,7 +42,7 @@ def convert_string_to_dict(input_text):
             startvalue = i + 1
 
     if startvalue < len(splitsquery):
-        if current_cat in ('CATEGORY', 'EXCLUDE', 'TIME'):
+        if current_cat in ('CATEGORY', 'EXCLUDE', 'DATE'):
             results[current_cat] = splitsquery[startvalue:]
         else:
             results[current_cat] = " ".join(splitsquery[startvalue:])
@@ -49,7 +51,7 @@ def convert_string_to_dict(input_text):
     results['CATEGORY'] = handle_category(results['CATEGORY'])
     # EXCLUDE (list of all terms you want to exclude from search)
     # TIME  (split into starting date and value later, incl later, earlier)
-    results['TIME'], results['DATETYPE'] = handle_time(results['TIME'])
+    results['DATE'], results['DATETYPE'] = handle_time(results['DATE'])
 
     # AMOUNT (how many articles should be searched)
     try:
