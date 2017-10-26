@@ -3,7 +3,8 @@ import search
 # Convert input_text to prepare for request
 def query_handler(input_text):
     htmltext = ""
-    results = search.search_in_index(text=input_text)
+    input_dict = convert_string_to_dict(input_text)
+    results = perform_search_from_dict(input_dict)
     htmltext += print_histo_values(results)
     # Add here extra data that needs to be showed above
 
@@ -11,6 +12,13 @@ def query_handler(input_text):
         htmltext += create_div_from_dict(article)
     return htmltext
 
+def perform_search_from_dict(input_dict):
+    results = search.search_in_index(text=input_dict['TEXT'],
+                                     categories=input_dict['CATEGORY'],
+                                     date=input_dict['TIME'],
+                                     datetype=input_dict['DATETYPE'],
+                                     size=input_dict['SIZE'])
+    return results
 
 #convert_string_to_dict('cooking an egg EXCLUDE jan piet hein lul SIZE a0')
 def convert_string_to_dict(input_text):
@@ -49,13 +57,14 @@ def convert_string_to_dict(input_text):
     except:
         results['SIZE'] = 10
 
-    print(results)
+    return results
 
 def handle_time(timeinput):
-    datetype = ''
-    time = ''
+    datetype = None
+    time = None
     if len(timeinput) == 1:
         time = timeinput[0]
+        datetype = 'gte'
     if len(timeinput) == 2:
         if timeinput[0] in ('from', 'since'):
             datetype = 'gte'
@@ -89,8 +98,7 @@ def handle_category(selected_cats):
             else:
                 new_selection.append(selected_cats[i])
 
-    #all_categories = seach.get_all_categories()
-    all_categories = ['hallo', 'paard']
+    all_categories = search.get_all_categories()
     if len(new_selection) < 1:
         new_selection = all_categories
     return [x for x in new_selection if \
@@ -126,7 +134,7 @@ def print_histo_values(res):
 	data = res['aggregations']['hits_over_time']['buckets']
 
 	titel = "dit moet een mooie titel worden"
-	result = '''<div id='chartContainer'> </div>
+	result = '''<div id='resultdiv'><div id='chartContainer'></div></div>
     <script type="text/javascript">
 	function make_graph() {
 	var chart = new CanvasJS.Chart("chartContainer",
