@@ -61,6 +61,10 @@ div#searchitems {
     float:left;
 }
 
+#resultdiv h2 {
+    margin-top: 0px;
+}
+
 #resultdiv a:link {
     font-size: 20;
     text-decoration: none;
