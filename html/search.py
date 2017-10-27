@@ -42,7 +42,7 @@ def make_query(text, categories, date, datetype):
 			}
 	}]
 
-	return {"explain": True, "query":{"function_score": {"query": query, "functions": function, "boost_mode": "sum"}}}
+	return {"explain": True, "query":{"function_score": {"query": query, "functions": function, "boost_mode": "sum"}}, "aggs":aggs}
 
 def search_in_index(text="", categories=[], date=None, datetype=None, size=1):
 	query = make_query(text, categories, date, datetype)
