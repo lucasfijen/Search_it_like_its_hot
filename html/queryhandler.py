@@ -68,7 +68,7 @@ def handle_time(timeinput):
     time = None
     if len(timeinput) == 1:
         time = timeinput[0]
-        datetype = 'gte'
+        datetype = 'in'
     if len(timeinput) == 2:
         if timeinput[0] in ('from', 'since'):
             datetype = 'gte'
@@ -120,6 +120,13 @@ def create_div_from_dict(article):
         else:
             resultstring += '<h1>' + article_dict['title'] + '</h1>'
 
+    resultstring += "<h2>"
+    if 'categorie' in article_dict:
+        resultstring += article_dict['categorie']
+    if 'creation_date' in article_dict:
+        resultstring += '   created on:' + article_dict['creation_date']
+    resultstring += "</h2>"
+
     if 'body' in article_dict:
         # Something to only take the first x words
         splittext = article_dict['body'].split(' ')
@@ -133,6 +140,7 @@ def create_div_from_dict(article):
 
     return resultstring
 
+# Prints the histo values
 def print_histo_values(res):
 	title = "Timeline"
 	data = res['aggregations']['hits_over_time']['buckets']
