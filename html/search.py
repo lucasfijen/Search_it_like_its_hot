@@ -8,7 +8,7 @@ import datetime
 HOST = 'http://localhost:9200/'
 es = Elasticsearch(hosts=[HOST])
 
-def make_query(text, categories, date, datetype):
+def make_query(text, categories, exclude, date, datetype):
 	try:
 		if len(date) == 4:
 			if datetype == 'in':
@@ -20,7 +20,7 @@ def make_query(text, categories, date, datetype):
 		pass
 
 
-	fields = ["title^2", "body", "accepted_answer", "answers", "comments"]
+	fields = ["title", "body", "accepted_answer", "answers", "comments"]
 	query = {}
 	query['bool'] = {"filter": {"bool": {"must": []}}}
 
@@ -33,6 +33,13 @@ def make_query(text, categories, date, datetype):
 		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {datetype: date}}})
 
 	query["bool"]['must'] = {"multi_match": {"fields": fields, "type": "best_fields","query": text}}
+
+	query["bool"]["must_not"] = []
+
+	for field in fields:
+		print(exclude)
+		query["bool"]["must_not"].append({"terms": {field: exclude}})
+
 
 	aggs =	{
 	        "hits_over_time" : {
@@ -49,10 +56,10 @@ def make_query(text, categories, date, datetype):
 			}
 	}]
 
-	return {"explain": True, "query":{"function_score": {"query": query, "functions": function, "boost_mode": "sum"}}, "aggs":aggs}
+	return {"explain": True, "query":{"function_score": {"functions": function, "query": query, "boost_mode": "sum"}}, "aggs":aggs}
 
-def search_in_index(text="", categories=[], date=None, datetype=None, size=1):
-	query = make_query(text, categories, date, datetype)
+def search_in_index(text="", categories=[], exclude=[], date=None, datetype=None, size=1):
+	query = make_query(text, categories, exclude, date, datetype)
 	res = es.search(index = 'index', body = query , size=size)
 
 	return res
