@@ -161,7 +161,9 @@ def print_histo_values(res):
 	data = res['aggregations']['hits_over_time']['buckets']
 
 	titel = "dit moet een mooie titel worden"
-	result = '''<div id='resultdiv'><div id='chartContainer'></div></div>
+	result = '''<div id='resultdiv'><h1>Total results: '''\
+    + str(res['hits']['total']) + ' Runtime:  '+ str(res['took']) +  '''ms</h1>
+    <div id='chartContainer'></div></div>
     <script type="text/javascript">
 	function make_graph() {
 	var chart = new CanvasJS.Chart("chartContainer",
