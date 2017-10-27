@@ -21,25 +21,26 @@ def make_query(text, categories, exclude, date, datetype):
 
 
 	fields = ["title", "body", "accepted_answer", "answers", "comments"]
-	query = {}
-	query['bool'] = {"filter": {"bool": {"must": []}}}
+	query = {'bool':{'filter':{'bool':{}}, 'must':{}}}
 
-	query["bool"]["filter"]["bool"]["must"].append({"terms": {"categorie": categories}})
+	must = []
+	must.append({"terms": {"categorie": categories}})
 
 	if datetype == 'in':
-		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {'gte': date, 'lt': second_date}}})
+		must.append({"range": {"creation_date": {'gte': date, 'lt': second_date}}})
 
 	elif date and datetype:
-		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {datetype: date}}})
+		must.append({"range": {"creation_date": {datetype: date}}})
 
-	query["bool"]['must'] = {"multi_match": {"fields": fields, "type": "best_fields","query": text}}
+	query["bool"]['must'] = {"multi_match": {"fields": fields, "type": "most_fields","query": text}}
 
-	query["bool"]["must_not"] = []
+	must_not = []
 
 	for field in fields:
 		print(exclude)
-		query["bool"]["must_not"].append({"terms": {field: exclude}})
+		must_not.append({"terms": {field: exclude}})
 
+	query['bool']['filter']['bool'] = {'must':must, 'must_not':must_not}
 
 	aggs =	{
 	        "hits_over_time" : {
@@ -60,6 +61,7 @@ def make_query(text, categories, exclude, date, datetype):
 
 def search_in_index(text="", categories=[], exclude=[], date=None, datetype=None, size=1):
 	query = make_query(text, categories, exclude, date, datetype)
+	print(query)
 	res = es.search(index = 'index', body = query , size=size)
 
 	return res
