@@ -48,12 +48,12 @@ def make_query(text, categories, exclude, date, datetype):
 			"factor": 0.1,
 			}
 	}]
-	return {"explain": True, "query":{"function_score": {"functions": function, "query": query, "boost_mode": "sum"}}, "aggs":aggs}
+	return {"explain": True, "query":{"function_score": {"functions": function, "query": query, "boost_mode": "sum", "max_boost":1}}, "aggs":aggs}
 
 def search_in_index(text="", categories=[], exclude=[], date=None, datetype=None, size=1):
 	query = make_query(text, categories, exclude, date, datetype)
 	res = es.search(index = 'index', body = query , size=size)
-
+	pprint.pprint(res['hits']['hits'][0]['_explanation'])
 	return res
 
 def get_all_categories():
