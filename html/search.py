@@ -39,7 +39,6 @@ def make_query(text, categories, exclude, date, datetype):
 	for field in fields:
 		print(exclude)
 		must_not.append({"terms": {field: exclude}})
-		query["bool"]["must_not"].append({"terms": {field: exclude}})
 
 	query['bool']['filter']['bool'] = {'must':must, 'must_not':must_not}
 
