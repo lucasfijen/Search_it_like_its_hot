@@ -39,6 +39,7 @@ def make_query(text, categories, exclude, date, datetype):
 	for field in fields:
 		print(exclude)
 		must_not.append({"terms": {field: exclude}})
+		query["bool"]["must_not"].append({"terms": {field: exclude}})
 
 	query['bool']['filter']['bool'] = {'must':must, 'must_not':must_not}
 
@@ -64,13 +65,15 @@ def search_in_index(text="", categories=[], exclude=[], date=None, datetype=None
 	print(query)
 	res = es.search(index = 'index', body = query , size=size)
 
+	# pprint.pprint(query, '\n')
+	# pprint.pprint(res['hits']['hits'][0]['_explanation'])
 	return res
 
 def get_all_categories():
 	query = {
 	    "aggs" : {
 	        "genres" : {
-	            "terms" : { "field" : "categorie" }
+	            "terms" : { "field" : "categorie", 'size': 1000 }
 	        }
 	    }
 	}

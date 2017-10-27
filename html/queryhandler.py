@@ -6,7 +6,9 @@ def query_handler(input_text):
     htmltext = ""
     input_dict = convert_string_to_dict(input_text)
     results = perform_search_from_dict(input_dict)
-    htmltext += print_histo_values(results)
+
+    if results['hits']['total'] > 0:
+        htmltext += print_histo_values(results)
     # Add here extra data that needs to be showed above
 
     for article in results['hits']['hits']:
@@ -21,7 +23,8 @@ def perform_search_from_dict(input_dict):
                                      categories=input_dict['CATEGORY'],
                                      date=input_dict['DATE'],
                                      datetype=input_dict['DATETYPE'],
-                                     size=input_dict['SIZE'])
+                                     size=input_dict['SIZE'],
+                                     exclude=input_dict['EXCLUDE'])
     return results
 
 #convert_string_to_dict('cooking an egg EXCLUDE jan piet hein lul SIZE a0')
@@ -124,9 +127,9 @@ def create_div_from_dict(article):
 
     resultstring += "<h2>"
     if 'categorie' in article_dict:
-        resultstring += article_dict['categorie']
+        resultstring += article_dict['categorie'].title()
     if 'creation_date' in article_dict:
-        resultstring += '   created on: ' + article_dict['creation_date'][:10]
+        resultstring += ', '+ article_dict['creation_date'][:10]
     resultstring += "</h2>"
 
     if 'body' in article_dict:

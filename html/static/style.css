@@ -61,6 +61,15 @@ div#searchitems {
     float:left;
 }
 
+#resultdiv h2 {
+    margin-top: 0px;
+    color: green;
+}
+
+#resultsdiv p {
+    margin-top: 5px;
+}
+
 #resultdiv a:link {
     font-size: 20;
     text-decoration: none;
