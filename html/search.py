@@ -14,7 +14,7 @@ def make_query(text, categories, date, datetype):
 			date = datetime.datetime.strptime(date, "%Y")
 	except:
 		pass
-	fields = ["title^10", "body^8", "accepted_answer^8", "answers^6", "comments^4"]
+	fields = ["title^2", "body", "accepted_answer", "answers", "comments"]
 	query = {}
 	query['bool'] = {"filter": {"bool": {"must": []}}}
 
@@ -34,11 +34,20 @@ def make_query(text, categories, date, datetype):
 	            }
 	        }
 	    }
-	return {"query": query, 'aggs': aggs}
+	function = [{
+		"field_value_factor": {
+			"field": "score",
+			"factor": 0.01,
+			}
+	}]
 
-def search_in_index(index='index', text="", categories=[], date=None, datetype=None, size=1):
-	res = es.search(index = index, body = make_query(text, categories, date, datetype) , size=size)
+	return {"explain": True, "query":{"function_score": {"query": query, "functions": function, "boost_mode": "sum"}}}
+	
+def search_in_index(text="", categories=[], date=None, datetype=None, size=1):
+	query = make_query(text, categories, date, datetype)
+	res = es.search(index = 'index', body = query , size=size)
 
+	pprint.pprint(res['hits']['hits'][0]['_explanation'])
 	return res
 
 def get_all_categories():
@@ -56,3 +65,6 @@ def get_all_categories():
 		result.append(categorie['key'])
 
 	return result
+
+search_in_index(text = 'durable material')
+
