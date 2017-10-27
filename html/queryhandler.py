@@ -6,16 +6,18 @@ def query_handler(input_text):
     htmltext = ""
     input_dict = convert_string_to_dict(input_text)
     results = perform_search_from_dict(input_dict)
-    print(input_dict)
     if results['hits']['total'] > 0:
         htmltext += print_histo_values(results)
     # Add here extra data that needs to be showed above
 
     for article in results['hits']['hits']:
         htmltext += '<div id="resultdiv">'
-        htmltext += create_div_from_dict(article)
+
         if input_dict['SHOWCLOUD']:
+            htmltext += create_div_from_dict(article, 'query_result')
             htmltext += create_wordcloud.main(article['_source'])
+        else:
+            htmltext += create_div_from_dict(article, 'result_without')
         htmltext += '</div>'
     return htmltext
 
@@ -123,9 +125,9 @@ def handle_category(selected_cats):
                             x in all_categories]
 
 # creates a single div for a articledict
-def create_div_from_dict(article):
+def create_div_from_dict(article, title):
     article_dict = article['_source']
-    resultstring = "<article id='query_result'>"
+    resultstring = "<div id='"+ title + "'>"
     if 'title' in article_dict:
         if 'link' in article_dict:
             resultstring += '<a href="http://' + article_dict['link'] + \
@@ -149,7 +151,7 @@ def create_div_from_dict(article):
             resultstring += '...'
         resultstring += '</p>'
 
-    resultstring += '</article>'
+    resultstring += '</div>'
 
     return resultstring
 

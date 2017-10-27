@@ -13,13 +13,13 @@ def main(doc):
     try:
         data += doc['accepted_answer']
     except:pass
-    
+
     data += doc['title']
 
     cloud = WordCloud().generate(data)
-    
+
     #store file
     cloud.to_file('static/clouds/' + doc['id'] + ".png")
 
-    resultstring = "<aside id='wordcloud'><img id='wordcloudimg' src='static/clouds/"+doc['id']+".png'></aside>"
+    resultstring = "<div id='wordcloud'><img id='wordcloudimg' src='static/clouds/"+doc['id']+".png'></div>"
     return resultstring
