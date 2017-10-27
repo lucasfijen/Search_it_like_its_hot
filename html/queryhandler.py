@@ -108,7 +108,6 @@ def handle_category(selected_cats):
                 new_selection.append(selected_cats[i])
 
     all_categories = search.get_all_categories()
-    print(all_categories)
     if len(new_selection) < 1:
         new_selection = all_categories
     return [x for x in new_selection if \
@@ -128,9 +127,9 @@ def create_div_from_dict(article):
 
     resultstring += "<h2>"
     if 'categorie' in article_dict:
-        resultstring += article_dict['categorie']
+        resultstring += article_dict['categorie'].title()
     if 'creation_date' in article_dict:
-        resultstring += ' '+ article_dict['creation_date'][:10]
+        resultstring += ', '+ article_dict['creation_date'][:10]
     resultstring += "</h2>"
 
     if 'body' in article_dict:
