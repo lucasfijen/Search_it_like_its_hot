@@ -78,6 +78,8 @@ def handle_time(timeinput):
             datetype = 'lt'
         if timeinput[0] in ('until'):
             datetype = 'lte'
+        if timeinput[0] in ('in'):
+            datetype = 'in'
         time = timeinput[1]
     return (time, datetype)
 
@@ -124,7 +126,7 @@ def create_div_from_dict(article):
     if 'categorie' in article_dict:
         resultstring += article_dict['categorie']
     if 'creation_date' in article_dict:
-        resultstring += '   created on:' + article_dict['creation_date']
+        resultstring += '   created on: ' + article_dict['creation_date'][:10]
     resultstring += "</h2>"
 
     if 'body' in article_dict:
