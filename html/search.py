@@ -20,25 +20,19 @@ def make_query(text, categories, exclude, date, datetype):
 		pass
 
 
-	fields = ["title", "body", "accepted_answer", "answers", "comments"]
-	query = {'bool':{'filter':{'bool':{}}, 'must':{}}}
+	fields = ["title^2", "body", "accepted_answer", "answers", "comments"]
+	query = {}
+	query['bool'] = {"filter": {"bool": {"must": []}}}
 
-	must = []
-	must.append({"terms": {"categorie": categories}})
+	query["bool"]["filter"]["bool"]["must"].append({"terms": {"categorie": categories}})
 
 	if datetype == 'in':
-		must.append({"range": {"creation_date": {'gte': date, 'lt': second_date}}})
+		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {'gte': date, 'lt': second_date}}})
 
 	elif date and datetype:
-		must.append({"range": {"creation_date": {datetype: date}}})
+		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {datetype: date}}})
 
-	query["bool"]['must'] = {"multi_match": {"fields": fields, "type": "most_fields","query": text}}
-
-	# for field in fields:
-	# 	print(exclude)
-
-	query['bool']['filter']['bool'] = {'must':must}
-	query['bool']['must_not'] = {"term": {'title': 'durable'}}
+	query["bool"]['must'] = {"multi_match": {"fields": fields, "type": "best_fields","query": text}}
 
 	aggs =	{
 	        "hits_over_time" : {
@@ -51,19 +45,18 @@ def make_query(text, categories, exclude, date, datetype):
 	function = [{
 		"field_value_factor": {
 			"field": "score",
-			"factor": 0.01,
+			"factor": 0.1,
 			}
 	}]
-
 	return {"explain": True, "query":{"function_score": {"functions": function, "query": query, "boost_mode": "sum"}}, "aggs":aggs}
 
 def search_in_index(text="", categories=[], exclude=[], date=None, datetype=None, size=1):
 	query = make_query(text, categories, exclude, date, datetype)
-	print(query)
+	print(query, '\n')
 	res = es.search(index = 'index', body = query , size=size)
 
 	# pprint.pprint(query, '\n')
-	# pprint.pprint(res['hits']['hits'][0]['_explanation'])
+	pprint.pprint(res['hits']['hits'][0]['_explanation'])
 	return res
 
 def get_all_categories():
