@@ -11,7 +11,11 @@ es = Elasticsearch(hosts=[HOST])
 def make_query(text, categories, date, datetype):
 	try:
 		if len(date) == 4:
+			if datetype == 'in':
+				second_date = str(int(date) + 1)
+				second_date = datetime.datetime.strptime(second_date, "%Y")
 			date = datetime.datetime.strptime(date, "%Y")
+
 	except:
 		pass
 
@@ -22,7 +26,10 @@ def make_query(text, categories, date, datetype):
 
 	query["bool"]["filter"]["bool"]["must"].append({"terms": {"categorie": categories}})
 
-	if date and datetype:
+	if datetype == 'in':
+		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {'gte': date, 'lt': second_date}}})
+
+	elif date and datetype:
 		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {datetype: date}}})
 
 	query["bool"]['must'] = {"multi_match": {"fields": fields, "type": "best_fields","query": text}}
@@ -65,5 +72,3 @@ def get_all_categories():
 		result.append(categorie['key'])
 
 	return result
-
-
