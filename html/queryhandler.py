@@ -172,6 +172,7 @@ def print_histo_values(res):
 		text:\"'''
 	result += title
 	result += '''\"},
+        backgroundColor: '#fafafa',
 		data: [
 			{
 			color: 'blue',

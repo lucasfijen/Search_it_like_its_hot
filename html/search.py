@@ -40,6 +40,9 @@ def make_query(text, categories, exclude, date, datetype):
 	                "field" : "creation_date",
 	                "interval" : "month"
 	            }
+	        },
+	        "found_categories":{
+	        		"terms": {"field": "categorie", "size": 1000}
 	        }
 	    }
 	function = [{
@@ -48,11 +51,12 @@ def make_query(text, categories, exclude, date, datetype):
 			"factor": 0.1,
 			}
 	}]
-	return {"explain": True, "query":{"function_score": {"functions": function, "query": query, "boost_mode": "sum", "max_boost":1}}, "aggs":aggs}
+	return {"explain": True, "query":{"function_score": {"functions": function, "query": query, "boost_mode": "sum", "max_boost":2}}, "aggs":aggs}
 
 def search_in_index(text="", categories=[], exclude=[], date=None, datetype=None, size=1):
 	query = make_query(text, categories, exclude, date, datetype)
 	res = es.search(index = 'index', body = query , size=size)
+	print(res['aggregations']['found_categories'])
 	return res
 
 def get_all_categories():
