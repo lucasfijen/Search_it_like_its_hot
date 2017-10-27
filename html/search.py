@@ -34,13 +34,11 @@ def make_query(text, categories, exclude, date, datetype):
 
 	query["bool"]['must'] = {"multi_match": {"fields": fields, "type": "most_fields","query": text}}
 
-	must_not = []
+	# for field in fields:
+	# 	print(exclude)
 
-	for field in fields:
-		print(exclude)
-		must_not.append({"terms": {field: exclude}})
-
-	query['bool']['filter']['bool'] = {'must':must, 'must_not':must_not}
+	query['bool']['filter']['bool'] = {'must':must}
+	query['bool']['must_not'] = {"term": {'title': 'durable'}}
 
 	aggs =	{
 	        "hits_over_time" : {
