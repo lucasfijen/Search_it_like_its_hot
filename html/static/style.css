@@ -50,9 +50,15 @@ div#searchitems {
 
 #resultdiv {
     margin-top: 20px;
-    padding: 10px 20px ;
+    padding: 10px 20px;
+    padding-right: 2px;
     background-color: #fafafa;
     box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+}
+
+#resultdiv article {
+    margin:10px;
+    float:left;
 }
 
 #resultdiv a:link {
@@ -71,8 +77,6 @@ div#searchitems {
 }
 
 #wordcloud{
-    float:right;
-    width:30%;
-    margin:0 auto;
+    overflow:hidden;
+    /*margin:0 auto;*/
 }
-
