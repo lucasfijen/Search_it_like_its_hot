@@ -6,7 +6,7 @@ def query_handler(input_text):
     htmltext = ""
     input_dict = convert_string_to_dict(input_text)
     results = perform_search_from_dict(input_dict)
-
+    print(input_dict)
     if results['hits']['total'] > 0:
         htmltext += print_histo_values(results)
     # Add here extra data that needs to be showed above
@@ -14,7 +14,8 @@ def query_handler(input_text):
     for article in results['hits']['hits']:
         htmltext += '<div id="resultdiv">'
         htmltext += create_div_from_dict(article)
-        htmltext += create_wordcloud.main(article['_source'])
+        if input_dict['SHOWCLOUD']:
+            htmltext += create_wordcloud.main(article['_source'])
         htmltext += '</div>'
     return htmltext
 
@@ -30,7 +31,8 @@ def perform_search_from_dict(input_dict):
 #convert_string_to_dict('cooking an egg EXCLUDE jan piet hein lul SIZE a0')
 def convert_string_to_dict(input_text):
     # text="", categories=[], date=None, datetype=None, size=10
-    results = {'TEXT':'', 'CATEGORY':[], 'EXCLUDE':[], 'DATE':[], 'SIZE':10}
+    results = {'TEXT':'', 'CATEGORY':[], 'EXCLUDE':[],
+               'DATE':[], 'SIZE':10, 'SHOWCLOUD': False}
 
     # make splitted query dict
     splitsquery = input_text.split()
@@ -40,6 +42,8 @@ def convert_string_to_dict(input_text):
         if splitsquery[i] in results.keys():
             if current_cat in ('CATEGORY', 'EXCLUDE', 'DATE'):
                 results[current_cat] = splitsquery[startvalue:i]
+            elif current_cat == 'SHOWCLOUD':
+                results[current_cat] = True
             else:
                 results[current_cat] = " ".join(splitsquery[startvalue:i])
 
@@ -49,8 +53,12 @@ def convert_string_to_dict(input_text):
     if startvalue < len(splitsquery):
         if current_cat in ('CATEGORY', 'EXCLUDE', 'DATE'):
             results[current_cat] = splitsquery[startvalue:]
+        elif current_cat == 'SHOWCLOUD':
+            results[current_cat] = True
         else:
             results[current_cat] = " ".join(splitsquery[startvalue:])
+    if current_cat == 'SHOWCLOUD':
+        results[current_cat] = True
     # CATEGORY (list of categories that should be searched)
     # and or not
     results['CATEGORY'] = handle_category(results['CATEGORY'])
