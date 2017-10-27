@@ -14,12 +14,13 @@ def make_query(text, categories, date, datetype):
 			date = datetime.datetime.strptime(date, "%Y")
 	except:
 		pass
+
+
 	fields = ["title^2", "body", "accepted_answer", "answers", "comments"]
 	query = {}
 	query['bool'] = {"filter": {"bool": {"must": []}}}
 
-	if len(categories) > 0:
-		query["bool"]["filter"]["bool"]["must"].append({"terms": {"categorie": categories}})
+	query["bool"]["filter"]["bool"]["must"].append({"terms": {"categorie": categories}})
 
 	if date and datetype:
 		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {datetype: date}}})
@@ -42,12 +43,11 @@ def make_query(text, categories, date, datetype):
 	}]
 
 	return {"explain": True, "query":{"function_score": {"query": query, "functions": function, "boost_mode": "sum"}}}
-	
+
 def search_in_index(text="", categories=[], date=None, datetype=None, size=1):
 	query = make_query(text, categories, date, datetype)
 	res = es.search(index = 'index', body = query , size=size)
 
-	pprint.pprint(res['hits']['hits'][0]['_explanation'])
 	return res
 
 def get_all_categories():
@@ -66,5 +66,4 @@ def get_all_categories():
 
 	return result
 
-search_in_index(text = 'durable material')
 
