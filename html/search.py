@@ -56,7 +56,6 @@ def make_query(text, categories, exclude, date, datetype):
 def search_in_index(text="", categories=[], exclude=[], date=None, datetype=None, size=1):
 	query = make_query(text, categories, exclude, date, datetype)
 	res = es.search(index = 'index', body = query , size=size)
-	print(res['aggregations']['found_categories'])
 	return res
 
 def get_all_categories():
