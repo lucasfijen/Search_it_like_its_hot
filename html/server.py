@@ -9,12 +9,8 @@ import queryhandler as handle
 
 app = Flask(__name__)
 
-@app.route("/hello/<name>")
-def helloa(name):
-    return "GA WEG %s" % name
 
-
-@app.route('/tryout', methods=['POST'])
+@app.route('/posthandler', methods=['POST'])
 def handlerhandler():
     if request.method == 'POST':
         text = request.form.get('questionbar')
@@ -26,7 +22,7 @@ def handlerhandler():
 
 @app.route('/')
 def testpage():
-    return render_template('test.html')
+    return render_template('index.html')
 
 if __name__ == "__main__":
     app.run()
