@@ -1,13 +1,14 @@
 from elasticsearch import Elasticsearch
 import sys
 import os
-import json
-import time
 from elasticsearch import  helpers
+import json
 
+# connect the the host
 HOST = "http://localhost:9200/"
 es = Elasticsearch(hosts=[HOST])
 
+# create request_body
 request_body = {
     "settings" : {
         "number_of_shards": 5,
@@ -15,6 +16,7 @@ request_body = {
     }
 }
 
+# create mapping
 mapping = {
 		"document": {
 			"properties": {
@@ -35,19 +37,20 @@ mapping = {
 		}
 	}
 
+# delete index if there is any
 try:
 	es.indices.delete(index='index')
 except:
 	pass
 
+# create index and add mapping to it
 es.indices.create(index = 'index', body = request_body)
 es.indices.put_mapping(index="index", doc_type="document", body=mapping)
 
 
 folder = tuple(os.listdir('json_bulks'))
 
-title = "3dprinting1.json"
-
+# add all bulks to elasticsearch
 for bulk in folder:
 	print(bulk)
 	os.system("curl -s -XPOST http://localhost:9200/_bulk --data-binary @json_bulks/" + bulk)

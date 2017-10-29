@@ -1,6 +1,5 @@
 from elasticsearch import Elasticsearch
 import json
-import pprint
 import datetime
 
 HOST = 'http://localhost:9200/'
