@@ -1,12 +1,8 @@
 from bs4 import BeautifulSoup as bs
-from multiprocessing import Process
 from multiprocessing import Pool
 import re
 import json
 import os
-import sys
-import time
-import datetime
 
 ########## cleanup ##########
 
@@ -82,9 +78,8 @@ def parse_answers(text_file, categorie, answer_dict, question_answer_dict):
         result["body"] = clean_text(soup.get('body'))
         result["viewcount"] = int(soup.get('viewcount'))
         result["score"] = int(soup.get('score'))
-        result["creation_date"] = make_datetime(soup.get('creationdate'))
-        result["link"] = categorie + ".stackexchange.com/questions/" + row_id + "/" \
-                                        + result["title"].replace(" ", "-")
+        result["creation_date"] = make_datetime(soup.get('creationdate')) 
+        result["link"] = categorie + ".stackexchange.com/questions/" + row_id + "/" + result["title"].replace(" ", "-")
 
         # check if there are any answers to the question
         try:
@@ -146,24 +141,28 @@ def parse_comments(text_file, categorie, answer_question_dict):
 
 def main(file):
     categorie = file[:-21]
-    os.system('mkdir' + categorie)
-    os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r -o' + 'mapjes/' + categorie)
+    os.system('mkdir mapjes/' + categorie)
+    os.system('7z e ' + 'dataset/' + file + ' Posts.xml Comments.xml -r -o' + 
+                        'mapjes/' + categorie)
     print(categorie)
     print("Post dict")
-    text_file = open('mapjes/'+categorie+'/Posts.xml', 'r')
+    text_file = open('mapjes/' + categorie + '/Posts.xml', 'r')
     answer_dict, question_answer_dict, answer_question_dict = make_dicts_from_Posts(text_file)
     text_file.close()
 
     print("Posts and Answers")
-    text_file = open('mapjes/'+categorie+'/Posts.xml', 'r')
+    text_file = open('mapjes/' + categorie + '/Posts.xml', 'r')
     parse_answers(text_file, categorie, answer_dict, question_answer_dict)
     del answer_dict
     text_file.close()
 
     print("Comments")
-    text_file = open('mapjes/'+categorie+'/Comments.xml', 'r')
+    text_file = open('mapjes/' + categorie + '/Comments.xml', 'r')
     parse_comments(text_file, categorie, answer_question_dict)
     text_file.close()
+
+
+########### multiprocessing ###########
 
 class Engine(object):
     def __call__(self, file):
@@ -172,10 +171,12 @@ class Engine(object):
 
 os.system('mkdir mapjes')
 try:
-    pool = Pool(os.cpu_count()) # on 8 processors
+    pool = Pool(os.cpu_count())
     engine = Engine()
     folder = os.listdir('dataset')
     data_outputs = pool.map(engine, folder)
 finally: # To make sure processes are closed in the end, even if errors happen
     pool.close()
     pool.join()
+
+os.system('rm -rf lampp mapjes')

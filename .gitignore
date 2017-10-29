@@ -1,14 +1,14 @@
-data.txt
 dataset
 json_files
-json_files_2
 json_bulks
+
 html/__pycache__
-html/static/clouds
 __pycache__/
+
 html/search.pyc
 html/queryhandler.pyc
 html/testsearch.pyc
+
 *.7z
 ipynb_checkpoints/
 ipyno_checkpoints/presentatie-checkpoint.ipynb
