@@ -1,7 +1,7 @@
 import search
 import create_wordcloud
 
-# Convert input_text to prepare for request
+# Convert input_text to prepare for request returns html code
 def query_handler(input_text):
     htmltext = ""
     input_dict = convert_string_to_dict(input_text)
@@ -21,6 +21,8 @@ def query_handler(input_text):
         htmltext += '</div>'
     return htmltext
 
+# sends request quries and lists toward the search handler for interaction with
+# elasticsearch, gets the results back and returns these
 def perform_search_from_dict(input_dict):
     results = search.search_in_index(text=input_dict['TEXT'],
                                      categories=input_dict['CATEGORY'],
@@ -76,6 +78,7 @@ def convert_string_to_dict(input_text):
 
     return results
 
+# Handles the time part of the query parcing.
 def handle_time(timeinput):
     datetype = None
     time = None
