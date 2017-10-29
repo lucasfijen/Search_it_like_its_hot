@@ -1,0 +1,70 @@
+<html>
+<head>
+    <link rel="favicon" href="">
+    <link rel="stylesheet" type='text/css' href="/static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script>
+        var rightspeed = 600;
+        var leftspeed = 1000;
+        var width = $(window).width();
+        var rightsize = (width * 0.8);
+        $(document).ready(function() {
+            $("#askbutton").on("click", function() {
+                $('#askbutton').animate({left: '+=' + rightsize}, rightspeed);
+                $('#result').animate({left: '+=' + rightsize}, rightspeed, function(){
+                    $("#result").css('display', 'block');
+                });
+                $('#questionbar').css({
+                                    'background-image': 'url("/static/images/fire.gif")',
+                                    'background-size': '100% 100%'});
+
+                $('#askbutton').delay(rightspeed).animate({left: '-=' + rightsize}, leftspeed);
+                $('#result').delay(rightspeed).animate({left: '-=' + rightsize}, leftspeed);
+                setTimeout( function(){
+                    $('#questionbar').css({
+                                        'background-image': '',
+                                        'background-size': ''});
+                }, (rightspeed + leftspeed));
+            });
+        });
+    </script>
+    <title>Search it like it's hot</title>
+</head>
+
+<body>
+    <div id='header'>
+        <img src='/static/images/foto.jpg'; id='logo'>
+    </div>
+    <div id='searchitems'>
+        <form id="searchform">
+            <input type='text'
+                   name="questionbar"
+                   id='questionbar'
+                   onfocus="if(this.value == 'Wat wilt u zoeken?') { this.value = ''; }"
+                   value='What do you want to search?'><br>
+            <button class="button" type="submit" id='askbutton'><span>Search<span></button>
+        </form>
+    </div>
+
+    <div id='result'>
+    </div>
+
+
+</body>
+<script>
+    (function($){
+        function processForm( e ){
+            $.post("http://localhost:5000/posthandler",
+                    $('#searchform').serialize(),
+                    function(result){
+                        setTimeout( function(){
+                            $('#result').html(result);
+                        }, rightspeed);
+            });
+            e.preventDefault();
+        }
+        $('#searchform').submit(processForm);
+    })(jQuery);
+</script>
+</html>
