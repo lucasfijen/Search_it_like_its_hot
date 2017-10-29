@@ -1,5 +1,5 @@
 This code was created by:
-- Dante Nieuwenhuis
+- Dante Niewenhuis
 - Lucas Fijen
 - Jier Nzuanzu
 - Levi Kok
