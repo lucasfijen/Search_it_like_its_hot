@@ -1,6 +1,6 @@
-dataset/*.7z
-json_files/*.json
-json_bulks/*.json
+dataset
+json_files
+json_bulks
 
 html/__pycache__
 __pycache__/
