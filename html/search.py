@@ -86,7 +86,7 @@ def get_all_categories():
 	}
 	res = es.search(index = 'index', body = query, size=0)
 
-	result = [categorie['key'] for categorie in /
+	result = [categorie['key'] for categorie in 
 							res['aggregations']['genres']['buckets']]
 
 	return result
