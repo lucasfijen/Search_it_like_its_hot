@@ -1,7 +1,5 @@
-import json
 from elasticsearch import Elasticsearch
-import pprint
-import time
+import json
 import pprint
 import datetime
 
@@ -9,6 +7,7 @@ HOST = 'http://localhost:9200/'
 es = Elasticsearch(hosts=[HOST])
 
 def make_query(text, categories, exclude, date, datetype):
+	# convert date to datetime object
 	try:
 		if len(date) == 4:
 			if datetype == 'in':
@@ -24,16 +23,23 @@ def make_query(text, categories, exclude, date, datetype):
 	query = {}
 	query['bool'] = {"filter": {"bool": {"must": []}}}
 
-	query["bool"]["filter"]["bool"]["must"].append({"terms": {"categorie": categories}})
+	# add categorie filter
+	query["bool"]["filter"]["bool"]["must"].append({"terms": 
+						{"categorie": categories}})
 
+	# add date filter
 	if datetype == 'in':
-		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {'gte': date, 'lt': second_date}}})
-
+		query["bool"]["filter"]["bool"]["must"].append({"range": 
+						{"creation_date": {'gte': date, 'lt': second_date}}})
 	elif date and datetype:
-		query["bool"]["filter"]["bool"]["must"].append({"range": {"creation_date": {datetype: date}}})
+		query["bool"]["filter"]["bool"]["must"].append({"range": 
+						{"creation_date": {datetype: date}}})
 
-	query["bool"]['must'] = {"multi_match": {"fields": fields, "type": "best_fields","query": text}}
+	# add text filter
+	query["bool"]['must'] = {"multi_match": {"fields": fields, 
+						"type": "best_fields","query": text}}
 
+	# make aggregation
 	aggs =	{
 	        "hits_over_time" : {
 	            "date_histogram" : {
@@ -45,18 +51,30 @@ def make_query(text, categories, exclude, date, datetype):
 	        		"terms": {"field": "categorie", "size": 1000}
 	        }
 	    }
+
+	# add function
 	function = [{
 		"field_value_factor": {
 			"field": "score",
 			"factor": 0.1,
 			}
 	}]
-	return {"explain": True, "query":{"function_score": {"functions": function, "query": query, "boost_mode": "sum", "max_boost":2}}, "aggs":aggs}
 
-def search_in_index(text="", categories=[], exclude=[], date=None, datetype=None, size=1):
+	# return query
+	return {"explain": True, "query":{"function_score": {"functions": function, 
+			"query": query, "boost_mode": "sum", "max_boost":2}}, "aggs":aggs}
+
+def search_in_index(text="", categories=[], exclude=[], date=None, 
+						datetype=None, size=1):
+	
+	# make query from imput.
 	query = make_query(text, categories, exclude, date, datetype)
+
+	# search for the query in the index
 	res = es.search(index = 'index', body = query , size=size)
-	return res
+
+	# return results
+	return res 
 
 def get_all_categories():
 	query = {
@@ -68,8 +86,7 @@ def get_all_categories():
 	}
 	res = es.search(index = 'index', body = query, size=0)
 
-	result = []
-	for categorie in res['aggregations']['genres']['buckets']:
-		result.append(categorie['key'])
+	result = [categorie['key'] for categorie in /
+							res['aggregations']['genres']['buckets']]
 
 	return result

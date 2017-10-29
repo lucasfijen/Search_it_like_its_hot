@@ -1,15 +1,11 @@
-import json
-import nltk
-from collections import Counter,defaultdict
 from wordcloud import WordCloud
 
 def main(doc):
-    data = ""
 
-    ######## fill in  dicts with strings#############
+    ######## fill in  dicts with strings #############
 
-    data += doc['body']
-    data += doc['answers']
+    data = doc['body'] + doc['answers']
+
     try:
         data += doc['accepted_answer']
     except:pass
@@ -18,8 +14,9 @@ def main(doc):
 
     cloud = WordCloud().generate(data)
 
-    #store file
+    # store file
     cloud.to_file('static/clouds/' + doc['id'] + ".png")
 
-    resultstring = "<div id='wordcloud'><img id='wordcloudimg' src='static/clouds/"+doc['id']+".png'></div>"
+    resultstring = "<div id='wordcloud'><img id='wordcloudimg' src='static/clouds/" + doc['id'] + ".png'></div>"
+
     return resultstring
